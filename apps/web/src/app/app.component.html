@@ -64,16 +64,6 @@
           <span class="manual-summary-status" [attr.data-tone]="paymentBalance.summary().tone">{{ paymentBalance.summary().headline }}</span>
           <small>{{ paymentBalance.summary().message }}</small>
         </button>
-
-        <button class="manual-summary-card" type="button" [class.active]="activeView() === 'wealth'" (click)="showView('wealth')">
-          <span class="label label-with-icon">
-            <span class="dot-icon dot-icon-wealth" aria-hidden="true"></span>
-            <span>PATRIMONIO</span>
-          </span>
-          <strong>{{ wealth.formatDop(wealth.summary().netWorthDop) }}</strong>
-          <span class="manual-summary-status" [attr.data-tone]="wealth.summary().tone">{{ wealth.summary().headline }}</span>
-          <small>{{ wealth.summary().message }}</small>
-        </button>
       </div>
     </div>
   </section>

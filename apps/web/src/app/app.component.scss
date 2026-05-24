@@ -106,10 +106,11 @@
 }
 
 .app-shell {
+	--mobile-nav-clearance: 112px;
 	width: 100%;
 	overflow-x: hidden;
 	min-height: 100vh;
-	padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(112px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+	padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(var(--mobile-nav-clearance) + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
 	background: var(--black);
 	color: var(--text-primary);
 }
@@ -443,7 +444,7 @@ select,
 
 .manual-summary-grid {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 	gap: 16px;
 }
 
@@ -500,7 +501,7 @@ select,
 	text-overflow: ellipsis;
 	text-transform: uppercase;
 	white-space: nowrap;
-    height: 24px;
+	height: 24px;
 }
 
 .manual-summary-status[data-tone='success'] {
@@ -1468,11 +1469,16 @@ th:last-child {
 	gap: 4px;
 	border: 1px solid var(--border-visible);
 	border-radius: 999px;
-	background: var(--surface);
+	background: color-mix(in srgb, var(--surface) 94%, transparent);
+	box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
 	padding: 4px;
 }
 
 .mobile-nav button {
+	display: grid;
+	align-content: center;
+	justify-items: center;
+	gap: 2px;
 	min-width: 0;
 	min-height: 44px;
 	border-radius: 999px;
@@ -1488,7 +1494,8 @@ th:last-child {
 
 @media (max-width: 960px) {
 	.app-shell {
-		padding: calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(104px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+		--mobile-nav-clearance: 124px;
+		padding: calc(18px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(var(--mobile-nav-clearance) + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
 	}
 
 	.topbar {
@@ -1548,6 +1555,68 @@ th:last-child {
 }
 
 @media (max-width: 620px) {
+	.access-lock-shell {
+		padding: calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+	}
+
+	.access-lock-panel {
+		gap: 16px;
+		padding: 22px;
+	}
+
+	.access-lock-panel h1 {
+		font-size: 28px;
+	}
+
+	.access-code-input {
+		font-size: 26px;
+		letter-spacing: 0.34em;
+	}
+
+	.app-shell {
+		--mobile-nav-clearance: 132px;
+		padding: calc(14px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(var(--mobile-nav-clearance) + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+	}
+
+	.topbar {
+		min-height: 42px;
+	}
+
+	.wordmark {
+		font-size: 11px;
+	}
+
+	.manual-dashboard {
+		padding: 18px 0 6px;
+	}
+
+	.manual-dashboard-panel {
+		padding: 16px;
+	}
+
+	.manual-summary-grid {
+		gap: 12px;
+	}
+
+	.manual-summary-card {
+		gap: 10px;
+		min-height: 0;
+		padding: 14px;
+	}
+
+	.manual-summary-card strong {
+		font-size: clamp(26px, 8vw, 34px);
+	}
+
+	.manual-summary-card small {
+		font-size: 12px;
+	}
+
+	.personal-budget,
+	.conversion-budget {
+		padding: 18px 0 8px;
+	}
+
 	.hero-copy h1 {
 		font-size: 48px;
 	}
@@ -1571,7 +1640,25 @@ th:last-child {
 	.personal-budget-panel,
 	.conversion-budget-panel,
 	.signal-card {
-		padding: 18px;
+		padding: 16px;
+	}
+
+	.section-heading {
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	.section-heading.compact {
+		margin-bottom: 12px;
+	}
+
+	.section-heading h2 {
+		font-size: 22px;
+	}
+
+	.secondary-button.dashboard-email-button {
+		min-height: 36px;
+		padding-inline: 12px;
 	}
 
 	.section-heading {
@@ -1636,6 +1723,30 @@ th:last-child {
 
 	.conversion-entry-remove {
 		justify-self: start;
+	}
+
+	.budget-result strong,
+	.conversion-final-result strong {
+		font-size: clamp(30px, 10vw, 40px);
+	}
+
+	.budget-cycle-spotlight {
+		padding: 12px;
+	}
+
+	.budget-cycle-spotlight strong {
+		font-size: clamp(34px, 11vw, 42px);
+	}
+
+	.mobile-nav {
+		bottom: calc(10px + env(safe-area-inset-bottom));
+		width: min(430px, calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+		max-width: calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right));
+		gap: 2px;
+	}
+
+	.mobile-nav button {
+		min-height: 42px;
 	}
 
 	.desktop-nav button,

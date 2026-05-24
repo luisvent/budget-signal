@@ -83,18 +83,30 @@ export class AppComponent {
     input.value = normalizedCode;
     this.enteredAccessCode.set(normalizedCode);
     this.accessStatus.set('');
+
+    if (normalizedCode.length === 4) {
+      this.unlockAccessCode(normalizedCode, false);
+    }
   }
 
   submitAccessCode(event: Event): void {
     event.preventDefault();
 
-    if (this.accessCode.unlock(this.enteredAccessCode())) {
+    this.unlockAccessCode(this.enteredAccessCode(), true);
+  }
+
+  private unlockAccessCode(code: string, showError: boolean): boolean {
+    if (this.accessCode.unlock(code)) {
       this.enteredAccessCode.set('');
       this.accessStatus.set('');
-      return;
+      return true;
     }
 
-    this.accessStatus.set('CÓDIGO INCORRECTO');
+    if (showError) {
+      this.accessStatus.set('CÓDIGO INCORRECTO');
+    }
+
+    return false;
   }
 
   showView(view: AppView): void {

@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppState, Budget, emptyBalancePaymentSummary, emptyPresupuestoSummary, emptyWealthSummary } from './core/models/budget.models';
+import { AccessCodeService } from './core/services/access-code.service';
 import { ApiClientService } from './core/services/api-client.service';
 import { AppComponent } from './app.component';
+
+const accessCodeStorageKey = 'budget-signal-access-code';
 
 const testBudgets: Budget[] = [
   { category: 'Groceries', limit: 700, currency: 'USD' },
@@ -82,10 +85,16 @@ function createUnlockedFixture(): ComponentFixture<AppComponent> {
 
 describe('AppComponent', () => {
   beforeEach(async () => {
+    localStorage.removeItem(accessCodeStorageKey);
+
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [{ provide: ApiClientService, useClass: ApiClientStub }]
     }).compileComponents();
+  });
+
+  afterEach(() => {
+    localStorage.removeItem(accessCodeStorageKey);
   });
 
   it('should create the app shell', () => {
@@ -112,6 +121,51 @@ describe('AppComponent', () => {
     expect(fixture.componentInstance.isUnlocked()).toBeFalse();
     expect(compiled.querySelector('.access-lock-status')?.textContent).toContain('CÓDIGO INCORRECTO');
     expect(compiled.querySelector('.wordmark')).toBeNull();
+  });
+
+  it('should save a correct access code for one day', () => {
+    const service = TestBed.inject(AccessCodeService);
+    const unlocked = service.unlock('0607');
+    const savedAccessCode = JSON.parse(localStorage.getItem(accessCodeStorageKey) ?? '{}') as { code?: string; expiresAt?: number };
+
+    expect(unlocked).toBeTrue();
+    expect(savedAccessCode.code).toBe('0607');
+    expect(savedAccessCode.expiresAt ?? 0).toBeGreaterThan(Date.now() + 23 * 60 * 60 * 1000);
+  });
+
+  it('should restore a saved access code that has not expired', () => {
+    localStorage.setItem(accessCodeStorageKey, JSON.stringify({ code: '0607', expiresAt: Date.now() + 60 * 60 * 1000 }));
+
+    const service = new AccessCodeService();
+
+    expect(service.isUnlocked()).toBeTrue();
+    expect(service.currentCode()).toBe('0607');
+  });
+
+  it('should remove saved access after it expires', () => {
+    localStorage.setItem(accessCodeStorageKey, JSON.stringify({ code: '0607', expiresAt: Date.now() - 1000 }));
+
+    const service = new AccessCodeService();
+
+    expect(service.isUnlocked()).toBeFalse();
+    expect(service.currentCode()).toBe('');
+    expect(localStorage.getItem(accessCodeStorageKey)).toBeNull();
+  });
+
+  it('should automatically unlock when the fourth typed digit completes the correct code', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const input = compiled.querySelector<HTMLInputElement>('.access-code-input');
+
+    expect(input).not.toBeNull();
+
+    input!.value = '0607';
+    input!.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.isUnlocked()).toBeTrue();
+    expect(compiled.querySelector('.wordmark')).not.toBeNull();
   });
 
   it('should render the dashboard brand', () => {
@@ -177,9 +231,9 @@ describe('AppComponent', () => {
     expect(summary.textContent).toContain('Dashboard');
     expect(summary.textContent).toContain('PRESUPUESTO');
     expect(summary.textContent).toContain('BALANCE DE PAGO');
-    expect(summary.textContent).toContain('PATRIMONIO');
+    expect(summary.textContent).not.toContain('PATRIMONIO');
     expect(summary.textContent).toContain('PRESIÓN');
-    expect(summary.querySelectorAll('.manual-summary-card').length).toBe(3);
+    expect(summary.querySelectorAll('.manual-summary-card').length).toBe(2);
   });
 
   it('should request a budget summary email from the dashboard action', async () => {
