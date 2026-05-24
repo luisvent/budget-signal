@@ -58,17 +58,11 @@
       <div class="personal-budget-editor">
         <section class="budget-ledger" aria-labelledby="expense-title">
           <div class="budget-ledger-title">
-            <span class="label label-with-icon">
+            <span class="label label-with-icon" id="expense-title">
               <span class="dot-icon dot-icon-expense" aria-hidden="true"></span>
               <span>GASTOS</span>
             </span>
-            <strong id="expense-title">Salidas</strong>
           </div>
-
-          <button class="secondary-button" type="button" [attr.aria-pressed]="showFixedExpenses()" (click)="toggleFixedExpenses()">
-            <span class="dot-icon dot-icon-ledger" aria-hidden="true"></span>
-            <span>{{ showFixedExpenses() ? 'OCULTAR FIJOS' : 'MOSTRAR FIJOS (' + fixedExpenseCount() + ')' }}</span>
-          </button>
 
           <div class="budget-entry-list">
             @for (expense of displayedExpenses(); track expense.id) {
@@ -98,6 +92,11 @@
               </div>
             }
           </div>
+
+          <button class="secondary-button" type="button" [attr.aria-pressed]="showFixedExpenses()" (click)="toggleFixedExpenses()">
+            <span class="dot-icon dot-icon-ledger" aria-hidden="true"></span>
+            <span>{{ showFixedExpenses() ? 'Ocultar gastos fijos' : 'Mostrar gastos fijos (' + fixedExpenseCount() + ')' }}</span>
+          </button>
 
           @if (addingExpense()) {
             <form class="add-expense-form" (ngSubmit)="addExpense()">
@@ -135,11 +134,10 @@
 
         <section class="budget-ledger" aria-labelledby="income-title">
           <div class="budget-ledger-title">
-            <span class="label label-with-icon">
+            <span class="label label-with-icon" id="income-title">
               <span class="dot-icon dot-icon-income" aria-hidden="true"></span>
               <span>INGRESOS</span>
             </span>
-            <strong id="income-title">Entradas</strong>
           </div>
 
           <div class="budget-entry-list">

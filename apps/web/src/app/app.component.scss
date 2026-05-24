@@ -2064,3 +2064,65 @@ th:last-child {
 	}
 }
 
+/* =====================================================================
+ * Mobile email block — bottom-of-page ENVIAR RESUMEN action.
+ * Hidden on desktop; visible only on small screens where the dashboard
+ * summary is hidden.
+ * =================================================================== */
+
+.mobile-email-block {
+	display: none;
+}
+
+@media (max-width: 620px) {
+	/* Hide the top dashboard summary on mobile — show only the active view. */
+	.manual-dashboard {
+		display: none;
+	}
+
+	/* Compact safe-area handling: keep the topbar close to the status bar
+	 * without stacking extra padding (the sticky topbar already adds its own
+	 * safe-area inset). */
+	.app-shell {
+		--mobile-nav-clearance: 108px;
+		padding-top: env(safe-area-inset-top);
+	}
+
+	/* Re-anchor the sticky topbar so it sits flush with the viewport top. */
+	.topbar {
+		margin-top: calc(-1 * env(safe-area-inset-top));
+		padding-top: calc(8px + env(safe-area-inset-top));
+		padding-bottom: 8px;
+	}
+
+	/* Pull the floating nav closer to the home indicator. */
+	.mobile-nav {
+		bottom: calc(2px + env(safe-area-inset-bottom));
+	}
+
+	/* Mobile-only ENVIAR RESUMEN block at the bottom of the page. */
+	.mobile-email-block {
+		display: grid;
+		gap: 8px;
+		justify-items: center;
+		margin: 24px auto 8px;
+		padding: 0 4px;
+		text-align: center;
+	}
+
+	.mobile-email-button {
+		width: 100%;
+		max-width: 320px;
+		min-height: 48px;
+	}
+
+	.mobile-email-status {
+		min-height: 16px;
+		color: var(--text-secondary);
+		font-family: 'Space Mono', monospace;
+		font-size: 11px;
+		letter-spacing: 0;
+		text-transform: uppercase;
+	}
+}
+

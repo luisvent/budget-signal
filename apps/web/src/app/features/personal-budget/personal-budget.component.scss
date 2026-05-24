@@ -94,3 +94,50 @@
 	font-size: 8px;
 	line-height: 1;
 }
+
+/* =====================================================================
+ * Mobile section separation — break the long Presupuesto view into
+ * distinct, readable blocks so the layout is easier to scan on iPhone.
+ * =================================================================== */
+@media (max-width: 620px) {
+	:host ::ng-deep .personal-budget-panel {
+		background: transparent;
+		border: 0;
+		padding: 0;
+	}
+
+	:host ::ng-deep .personal-budget-grid {
+		gap: 20px;
+	}
+
+	:host ::ng-deep .personal-budget-editor {
+		gap: 18px;
+	}
+
+	/* Group the four summary blocks into a single card surface, keeping the
+	 * GASTOS / INGRESOS ledgers as separate cards below. */
+	:host ::ng-deep .personal-budget-summary {
+		gap: 14px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--surface);
+		padding: 16px;
+	}
+
+	:host ::ng-deep .budget-ledger {
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--surface);
+		padding: 16px;
+	}
+
+	/* Section heading sits above its block, not inside a card. */
+	:host ::ng-deep .section-heading {
+		margin-bottom: 4px;
+	}
+
+	/* Add breathing room between the expense list and the income list. */
+	:host ::ng-deep .personal-budget-editor > .budget-ledger + .budget-ledger {
+		margin-top: 4px;
+	}
+}

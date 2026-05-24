@@ -87,6 +87,14 @@
     }
   </section>
 
+  <section class="mobile-email-block" aria-label="Envío de resumen">
+    <button class="secondary-button mobile-email-button" type="button" [disabled]="store.sendingBudgetEmail()" (click)="store.sendBudgetSummaryEmail()">
+      <span class="dot-icon dot-icon-upload" aria-hidden="true"></span>
+      <span>{{ store.sendingBudgetEmail() ? 'ENVIANDO' : 'ENVIAR RESUMEN' }}</span>
+    </button>
+    <span class="mobile-email-status" aria-live="polite">{{ store.budgetEmailStatus() }}</span>
+  </section>
+
   <nav class="mobile-nav" aria-label="Principal móvil">
     <button type="button" [class.active-view]="activeView() === 'budget'" [attr.aria-current]="activeView() === 'budget' ? 'page' : null" (click)="showView('budget')">
       <span class="dot-icon dot-icon-budget" aria-hidden="true"></span>
