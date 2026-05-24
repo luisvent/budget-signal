@@ -19,11 +19,11 @@ The architecture should keep the existing separation between frontend and backen
 
 The project is already close to the right shape for cross-platform delivery.
 
-- Angular 21 SPA lives under `src/`.
-- Node API lives under `server/`.
-- `src/app/core/services/api-client.service.ts` is the frontend API boundary.
+- Angular 21 SPA lives under `apps/web/src/`.
+- Node API lives under `apps/api/src/`.
+- `apps/web/src/app/core/services/api-client.service.ts` is the frontend API boundary.
 - Frontend services call backend endpoints through `/api/...` paths.
-- Local development runs the API on `127.0.0.1:3000` and Angular on `localhost:4200` with `proxy.conf.json` forwarding `/api`.
+- Local development runs the API on `127.0.0.1:3000` and Angular on `localhost:4200` with `apps/web/proxy.conf.json` forwarding `/api`.
 - Docker builds two deployment targets: Angular web served by Nginx on port `4210`, and the Node API on port `8734`.
 - Production persistence is a JSON store mounted at `/data` through Docker volume `budget-signal-data`.
 - Backend engines generate the important financial summaries, so iOS does not need a separate business-logic implementation.
@@ -277,7 +277,7 @@ npm install -D @capacitor/cli @capacitor/ios
 Initialize Capacitor:
 
 ```bash
-npx cap init "Budget Signal" "com.yourdomain.budgetsignal" --web-dir dist/budget-signal/browser
+npx cap init "Budget Signal" "com.yourdomain.budgetsignal" --web-dir dist/apps/web/browser
 npx cap add ios
 ```
 
@@ -301,7 +301,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.yourdomain.budgetsignal',
   appName: 'Budget Signal',
-  webDir: 'dist/budget-signal/browser',
+  webDir: 'dist/apps/web/browser',
   server: {
     cleartext: false
   }

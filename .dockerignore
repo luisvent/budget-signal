@@ -5,7 +5,7 @@
 coverage
 dist
 node_modules
-server/data
+apps/api/data
 tmp
 .DS_Store
 .env

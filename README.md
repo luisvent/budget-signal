@@ -117,25 +117,25 @@ For a domain, point the web reverse proxy to `4210`. If you want a public API do
 
 ## Structure
 
-- `server/index.mjs` is the Node HTTP API.
-- `server/store.mjs` owns app-state normalization, manual budgets, conversion budget data, statement imports, duplicate detection, and budget threshold persistence.
-- `server/persistence` owns the versioned JSON data store, schema migrations, atomic writes, backups, and persistence tests.
-- `server/presupuesto-summary-engine.mjs` generates the Spanish `Presupuesto` dashboard verdict from backend budget data and Dominican economic context.
-- `server/balance-payment-summary-engine.mjs` generates the Spanish `Balance de Pago` verdict from the final payment result and coverage signals.
-- `server/wealth-summary-engine.mjs` generates the Spanish `Patrimonio` verdict, score dimensions, benchmarks, stress tests, action plan, and source-backed financial analysis from assets, debts, liquidity, leverage, investment exposure, DOP/USD exposure, and researched financial resilience metrics.
-- `server/email` composes the budget summary email template and sends it through Resend.
-- `server/statement-parser.mjs` parses generic CSV, Banco Popular text statements, and CreditCardMovementsDetail CSV exports.
-- `server/data/app-state.json` is the development JSON store; deployed servers should point `BUDGET_SIGNAL_DATA_FILE` or `BUDGET_SIGNAL_DATA_DIR` to a persistent path outside the app release folder.
-- `proxy.conf.json` connects the Angular dev server to the backend API.
-- `src/app/app.component.*` is the app shell and navigation composition.
-- `src/app/core/models` contains shared domain types.
-- `src/app/core/services/api-client.service.ts` is the SPA API client.
-- `src/app/core/services/personal-budget.service.ts` hydrates and saves the manual monthly income/expense budget through the backend without owning default categories.
-- `src/app/core/services/conversion-budget.service.ts` hydrates and saves the two-step currency conversion budget through the backend without owning default categories.
-- `src/app/core/services/wealth-position.service.ts` hydrates and saves the asset/debt portfolio through the backend and renders backend-generated patrimony summaries.
-- `src/app/core/services/spending-analytics.service.ts` calculates category, merchant, monthly, and budget insights.
-- `src/app/core/services/budget-store.service.ts` owns UI signals and consumes backend state/import endpoints.
-- `src/app/features` contains focused UI components for the active manual budget views, statement import, and statement analysis results mounted inside the `Importar` view.
+- `apps/api/src/index.mjs` is the Node HTTP API.
+- `apps/api/src/store.mjs` owns app-state normalization, manual budgets, conversion budget data, statement imports, duplicate detection, and budget threshold persistence.
+- `apps/api/src/persistence` owns the versioned JSON data store, schema migrations, atomic writes, backups, and persistence tests.
+- `apps/api/src/presupuesto-summary-engine.mjs` generates the Spanish `Presupuesto` dashboard verdict from backend budget data and Dominican economic context.
+- `apps/api/src/balance-payment-summary-engine.mjs` generates the Spanish `Balance de Pago` verdict from the final payment result and coverage signals.
+- `apps/api/src/wealth-summary-engine.mjs` generates the Spanish `Patrimonio` verdict, score dimensions, benchmarks, stress tests, action plan, and source-backed financial analysis from assets, debts, liquidity, leverage, investment exposure, DOP/USD exposure, and researched financial resilience metrics.
+- `apps/api/src/email` composes the budget summary email template and sends it through Resend.
+- `apps/api/src/statement-parser.mjs` parses generic CSV, Banco Popular text statements, and CreditCardMovementsDetail CSV exports.
+- `apps/api/data/app-state.json` is the development JSON store; deployed servers should point `BUDGET_SIGNAL_DATA_FILE` or `BUDGET_SIGNAL_DATA_DIR` to a persistent path outside the app release folder.
+- `apps/web/proxy.conf.json` connects the Angular dev server to the backend API.
+- `apps/web/src/app/app.component.*` is the app shell and navigation composition.
+- `apps/web/src/app/core/models` contains shared domain types.
+- `apps/web/src/app/core/services/api-client.service.ts` is the SPA API client.
+- `apps/web/src/app/core/services/personal-budget.service.ts` hydrates and saves the manual monthly income/expense budget through the backend without owning default categories.
+- `apps/web/src/app/core/services/conversion-budget.service.ts` hydrates and saves the two-step currency conversion budget through the backend without owning default categories.
+- `apps/web/src/app/core/services/wealth-position.service.ts` hydrates and saves the asset/debt portfolio through the backend and renders backend-generated patrimony summaries.
+- `apps/web/src/app/core/services/spending-analytics.service.ts` calculates category, merchant, monthly, and budget insights.
+- `apps/web/src/app/core/services/budget-store.service.ts` owns UI signals and consumes backend state/import endpoints.
+- `apps/web/src/app/features` contains focused UI components for the active manual budget views, statement import, and statement analysis results mounted inside the `Importar` view.
 
 ## API Endpoints
 
@@ -214,7 +214,7 @@ The app shell shows a simple two-card dashboard summary with the current result 
 
 The `Presupuesto` view is a manual monthly budget, separate from imported bank statement analysis. The backend supplies income categories, fixed card expense categories, and hidden fixed expense defaults; the SPA renders and edits the API state without owning those default values. Hidden fixed expenses are included in totals and backend summaries, but stay collapsed behind the fixed-expense toggle to keep the editor compact. Any `USD` entry is converted to Dominican pesos at `1 USD = 60 DOP`, so the displayed totals and result are a single DOP budget result. Each budget cycle closes on the 27th; the Budget view shows the remaining-day countdown, and the backend `Presupuesto` summary uses that countdown in its Spanish verdict.
 
-When changing budget inputs, currencies, dashboard result semantics, API response shapes, or Dominican context assumptions, review `server/presupuesto-summary-engine.mjs` in the same change so the backend summary keeps matching the app.
+When changing budget inputs, currencies, dashboard result semantics, API response shapes, or Dominican context assumptions, review `apps/api/src/presupuesto-summary-engine.mjs` in the same change so the backend summary keeps matching the app.
 
 The `Balance de Pago` view starts from one amount in `USD` or `DOP`. Before any before-conversion categories are subtracted, the backend calculates a net source amount by subtracting `1.8%` plus `US$7` from the entered amount; when the source currency is `DOP`, the fixed fee is converted at `1 USD = 60 DOP`. The view then subtracts the first backend-configured category group, supports adding/removing custom before-conversion categories, converts the result to Dominican pesos at `1 USD = 60 DOP`, adds an extra after-conversion DOP entry, subtracts the second backend-configured DOP category group, and displays the final result at the end of the after-conversion panel.
 
@@ -247,7 +247,7 @@ The summary engine evaluates and returns:
 - Benchmarks comparing the portfolio to local and global anchors such as emergency fund thresholds, debt ratios, BCRD inflation context, Findex emergency-money access, and Dominican wage/canasta references.
 - A prioritized action plan that changes by case, such as attacking expensive debt, completing a 3-month reserve, reducing monthly debt pressure, covering USD mismatch, automating productive capital, or reducing concentration.
 
-The research anchors encoded in `server/wealth-summary-engine.mjs` include World Bank Global Findex 2025 financial inclusion, formal saving, and emergency resilience metrics; CFPB emergency fund and financial well-being guidance; Federal Reserve SHED household financial well-being modules; FDIC Money Smart banking/credit/savings education; SEC Investor.gov diversification framing; IMF Global Financial Stability Report and World Economic Outlook risk framing for debt, volatility, FX, inflation, and tighter financial conditions; BIS uncertainty and financial-system stability context; BCRD inflation/IPC/canasta data categories; BCRD exchange-rate, survey, volume, and volatility references; BCRD monetary/financial sector rates and credit references; BCRD ENGIH household income/expense context; BCRD ENCFT labor/income/formality context; DGII tax, vehicle, and exchange-rate statistics; and local wage/pension/banking references where available. These sources are not fetched at runtime; the app keeps a deterministic local engine with source references embedded in the backend summary context.
+The research anchors encoded in `apps/api/src/wealth-summary-engine.mjs` include World Bank Global Findex 2025 financial inclusion, formal saving, and emergency resilience metrics; CFPB emergency fund and financial well-being guidance; Federal Reserve SHED household financial well-being modules; FDIC Money Smart banking/credit/savings education; SEC Investor.gov diversification framing; IMF Global Financial Stability Report and World Economic Outlook risk framing for debt, volatility, FX, inflation, and tighter financial conditions; BIS uncertainty and financial-system stability context; BCRD inflation/IPC/canasta data categories; BCRD exchange-rate, survey, volume, and volatility references; BCRD monetary/financial sector rates and credit references; BCRD ENGIH household income/expense context; BCRD ENCFT labor/income/formality context; DGII tax, vehicle, and exchange-rate statistics; and local wage/pension/banking references where available. These sources are not fetched at runtime; the app keeps a deterministic local engine with source references embedded in the backend summary context.
 
 ## Statement Formats
 
@@ -261,6 +261,6 @@ For Banco Popular exports, `CR` rows are spending and `DB` rows are treated as p
 
 For CreditCardMovementsDetail exports, positive `Pesos` values are imported as `DOP`, positive `Dólares` values are imported as `USD`, and negative/payment rows are skipped.
 
-Statement imports are accumulative. Parsed statement records are saved by the Node backend in `server/data/app-state.json` and restored on reload; duplicate transactions are skipped across stored statements.
+Statement imports are accumulative. Parsed statement records are saved by the Node backend in `apps/api/data/app-state.json` during local development and restored on reload; duplicate transactions are skipped across stored statements.
 
 Transaction origin labels come from each format's trusted statement source: generic CSV and Banco Popular use the pasted label or uploaded file name, while CreditCardMovementsDetail uses the second row's second and third columns joined together. CSV `Account`, `Card`, or `Source` columns are not used as the statement origin.

@@ -13,34 +13,34 @@
           "style": "scss"
         }
       },
-      "root": "",
-      "sourceRoot": "src",
+      "root": "apps/web",
+      "sourceRoot": "apps/web/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/budget-signal",
-            "index": "src/index.html",
-            "browser": "src/main.ts",
+            "outputPath": "dist/apps/web",
+            "index": "apps/web/src/index.html",
+            "browser": "apps/web/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "apps/web/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "apps/web/public"
               },
               {
                 "glob": "**/*",
-                "input": "images",
+                "input": "apps/web/images",
                 "output": "images"
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "apps/web/src/styles.scss"
             ],
             "scripts": []
           },
@@ -90,21 +90,21 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "tsconfig.spec.json",
+            "tsConfig": "apps/web/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "apps/web/public"
               },
               {
                 "glob": "**/*",
-                "input": "images",
+                "input": "apps/web/images",
                 "output": "images"
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "apps/web/src/styles.scss"
             ],
             "scripts": []
           }

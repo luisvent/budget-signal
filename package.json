@@ -1,15 +1,15 @@
 {
   "name": "budget-signal",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.json",
-    "start:spa": "ng serve --proxy-config proxy.conf.json",
-    "start:api": "node server/index.mjs",
+    "start": "ng serve --proxy-config apps/web/proxy.conf.json",
+    "start:spa": "ng serve --proxy-config apps/web/proxy.conf.json",
+    "start:api": "node apps/api/src/index.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:server": "node --test server/*.test.mjs server/email/*.test.mjs server/persistence/*.test.mjs",
+    "test:server": "node --test apps/api/src/*.test.mjs apps/api/src/email/*.test.mjs apps/api/src/persistence/*.test.mjs",
     "test:all": "npm run test:server && npm test -- --watch=false --browsers=ChromeHeadless"
   },
   "engines": {

@@ -1,8 +1,4 @@
-import { createReadStream, existsSync } from 'node:fs';
-import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { dirname, extname, join, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import {
   clearStatements,
   getConversionBudget,
@@ -23,26 +19,10 @@ import {
   updateWealthPortfolio
 } from './store.mjs';
 
-const currentDir = dirname(fileURLToPath(import.meta.url));
-const projectRoot = resolve(currentDir, '..');
 const port = Number(process.env.PORT ?? 3000);
 const host = process.env.HOST ?? '127.0.0.1';
 const allowedOrigin = process.env.CORS_ORIGIN ?? '*';
 const maxBodyBytes = Number(process.env.MAX_BODY_BYTES ?? 15 * 1024 * 1024);
-const staticRoot = resolve(process.env.STATIC_ROOT ?? resolveDefaultStaticRoot());
-const contentTypes = {
-  '.css': 'text/css; charset=utf-8',
-  '.html': 'text/html; charset=utf-8',
-  '.ico': 'image/x-icon',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.js': 'text/javascript; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
-  '.svg': 'image/svg+xml',
-  '.txt': 'text/plain; charset=utf-8',
-  '.webp': 'image/webp'
-};
 
 const server = createServer(async (request, response) => {
   setCorsHeaders(response);
@@ -117,12 +97,7 @@ const server = createServer(async (request, response) => {
         sendJson(response, 200, await clearStatements());
         return;
       default:
-        if (isApiPath(url.pathname)) {
-          sendJson(response, 404, { error: 'Not found' });
-          return;
-        }
-
-        await serveStaticRequest(request, response, url.pathname);
+        sendJson(response, 404, { error: 'Not found' });
         return;
     }
   } catch (error) {
@@ -134,108 +109,6 @@ const server = createServer(async (request, response) => {
 server.listen(port, host, () => {
   console.log(`Budget Signal server listening on http://${host}:${port}`);
 });
-
-function resolveDefaultStaticRoot() {
-  const candidates = [
-    join(projectRoot, 'dist', 'budget-signal', 'browser'),
-    join(projectRoot, 'dist', 'budget-signal')
-  ];
-
-  return candidates.find((candidate) => existsSync(join(candidate, 'index.html'))) ?? candidates[0];
-}
-
-function isApiPath(pathname) {
-  return pathname === '/api' || pathname.startsWith('/api/');
-}
-
-async function serveStaticRequest(request, response, pathname) {
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
-    sendJson(response, 404, { error: 'Not found' });
-    return;
-  }
-
-  const filePath = await resolveStaticFile(pathname);
-
-  if (!filePath) {
-    sendJson(response, 404, { error: 'Not found' });
-    return;
-  }
-
-  const fileStats = await stat(filePath);
-  response.writeHead(200, {
-    'Cache-Control': cacheControlFor(filePath),
-    'Content-Length': fileStats.size,
-    'Content-Type': contentTypes[extname(filePath).toLowerCase()] ?? 'application/octet-stream'
-  });
-
-  if (request.method === 'HEAD') {
-    response.end();
-    return;
-  }
-
-  createReadStream(filePath)
-    .on('error', () => {
-      if (!response.headersSent) {
-        sendJson(response, 500, { error: 'Could not read static asset' });
-      } else {
-        response.destroy();
-      }
-    })
-    .pipe(response);
-}
-
-async function resolveStaticFile(pathname) {
-  const requestedPath = safeStaticPath(pathname);
-
-  if (!requestedPath) {
-    return null;
-  }
-
-  if (await isFile(requestedPath)) {
-    return requestedPath;
-  }
-
-  if (extname(requestedPath) !== '') {
-    return null;
-  }
-
-  const indexPath = join(staticRoot, 'index.html');
-  return await isFile(indexPath) ? indexPath : null;
-}
-
-function safeStaticPath(pathname) {
-  let decodedPath;
-
-  try {
-    decodedPath = decodeURIComponent(pathname || '/');
-  } catch {
-    return null;
-  }
-
-  const assetPath = decodedPath === '/' || decodedPath.endsWith('/') ? 'index.html' : decodedPath.replace(/^\/+/, '');
-  const absolutePath = resolve(staticRoot, assetPath);
-  const rootPrefix = staticRoot.endsWith(sep) ? staticRoot : `${staticRoot}${sep}`;
-
-  if (absolutePath !== staticRoot && !absolutePath.startsWith(rootPrefix)) {
-    return null;
-  }
-
-  return absolutePath;
-}
-
-async function isFile(filePath) {
-  try {
-    return (await stat(filePath)).isFile();
-  } catch {
-    return false;
-  }
-}
-
-function cacheControlFor(filePath) {
-  return extname(filePath).toLowerCase() === '.html'
-    ? 'no-cache'
-    : 'public, max-age=31536000, immutable';
-}
 
 function setCorsHeaders(response) {
   response.setHeader('Access-Control-Allow-Origin', allowedOrigin);

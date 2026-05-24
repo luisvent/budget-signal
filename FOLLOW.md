@@ -35,6 +35,7 @@ Last updated: May 18, 2026
 - [x] Category rules tuned against the provided credit card statements.
 - [x] Production build verified.
 - [x] Dev server launched for local review.
+- [x] Project source reorganized into `apps/web` for Angular and `apps/api` for the Node API.
 
 ## Verification
 
@@ -69,9 +70,9 @@ Last updated: May 18, 2026
 - Generate `Balance de Pago` dashboard analysis in the backend, not the SPA.
 - Generate `Patrimonio` net-worth analysis, score, benchmarks, stress tests, source matrix, and action plan in the backend, not the SPA.
 - Send budget summary emails from the backend only through Resend using environment variables.
-- Keep `server/presupuesto-summary-engine.mjs` in sync whenever app changes affect budget inputs, currencies, dashboard result semantics, API response shape, or Dominican context assumptions.
+- Keep `apps/api/src/presupuesto-summary-engine.mjs` in sync whenever app changes affect budget inputs, currencies, dashboard result semantics, API response shape, or Dominican context assumptions.
 - Keep the `Presupuesto` cycle cutoff at day 27 unless the user changes the monthly close rule; any change must update backend summary messages and countdown UI/tests together.
-- Keep `server/balance-payment-summary-engine.mjs` in sync whenever app changes affect payment balance inputs, currency conversion, final result semantics, or API response shape.
+- Keep `apps/api/src/balance-payment-summary-engine.mjs` in sync whenever app changes affect payment balance inputs, currency conversion, final result semantics, or API response shape.
 - Keep the Angular SPA focused on rendering, user interaction, file selection, and consuming API state; fixed/default budget data lives in the Node backend.
 - Treat statement origin as format-specific metadata: generic CSV and Banco Popular use the pasted label or file name; CreditCardMovementsDetail uses row 2 column 2 plus row 2 column 3.
 - Persist parsed statements in backend JSON storage and append new imports while skipping duplicate transactions.

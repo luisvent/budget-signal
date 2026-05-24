@@ -20,7 +20,7 @@ import { buildUploadPreview, decodeStatementBuffer, parseStatement } from './sta
 import { generateWealthSummary } from './wealth-summary-engine.mjs';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
-const defaultDataDir = process.env.BUDGET_SIGNAL_DATA_DIR ?? join(currentDir, 'data');
+const defaultDataDir = process.env.BUDGET_SIGNAL_DATA_DIR ?? join(currentDir, '..', 'data');
 const dataFilePath = process.env.BUDGET_SIGNAL_DATA_FILE ?? join(defaultDataDir, 'app-state.json');
 const personalEntryIdAliases = new Map([
   ['expense-apartamento', 'expense-ahorro']

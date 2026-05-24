@@ -29,25 +29,25 @@ Build a mobile-friendly budgeting system split into a Node backend stack for per
 
 ## App Structure
 
-- `server/index.mjs` exposes the REST API.
-- `server/store.mjs` owns persisted state normalization, validation, duplicate detection, and import application.
-- `server/persistence` owns schema-versioned JSON reads/writes, migrations, atomic file replacement, and previous-file backups.
-- `server/presupuesto-summary-engine.mjs` owns the smart monthly `Presupuesto` verdict, combining the net result, savings rate, expense pressure, USD exposure, and Dominican economic context.
-- `server/balance-payment-summary-engine.mjs` owns the smart `Balance de Pago` verdict, evaluating whether generated money covers credit cards and actual end-of-month expenses.
-- `server/wealth-summary-engine.mjs` owns the smart `Patrimonio` verdict, score dimensions, liquidity/debt/investment/currency metrics, stress tests, benchmarks, and embedded research context.
-- `server/budget-summary-email.mjs` owns email composition and Resend delivery using backend environment variables.
-- `server/statement-parser.mjs` owns CSV, Banco Popular text, and CreditCardMovementsDetail parsing.
-- `server/defaults.mjs` owns backend defaults and sample statement content.
-- `proxy.conf.json` proxies Angular dev-server `/api` calls to the Node API.
-- `src/app/core/models` holds shared statement, budget, insight, and import summary types.
-- `src/app/core/services/api-client.service.ts` owns SPA HTTP calls to the backend.
-- `src/app/core/services/spending-analytics.service.ts` owns derived spending, merchant, monthly, and budget calculations.
-- `src/app/core/services/budget-store.service.ts` owns UI signals and backend state/import consumption.
-- `src/app/core/services/personal-budget.service.ts` owns the independent manual monthly budget UI state and backend persistence calls.
-- `src/app/core/services/conversion-budget.service.ts` owns the independent two-step conversion budget UI state and backend persistence calls.
-- `src/app/core/services/wealth-position.service.ts` owns the `Patrimonio` UI state and backend persistence calls without calculating wealth summaries in the SPA.
-- `src/app/features` holds focused UI components for personal budget, conversion budget, dashboard, spending analysis, import, and transactions; the app shell mounts the personal budget, conversion budget, and import/analysis views.
-- `src/app/app.component.*` is now only the app shell and navigation composition.
+- `apps/api/src/index.mjs` exposes the REST API.
+- `apps/api/src/store.mjs` owns persisted state normalization, validation, duplicate detection, and import application.
+- `apps/api/src/persistence` owns schema-versioned JSON reads/writes, migrations, atomic file replacement, and previous-file backups.
+- `apps/api/src/presupuesto-summary-engine.mjs` owns the smart monthly `Presupuesto` verdict, combining the net result, savings rate, expense pressure, USD exposure, and Dominican economic context.
+- `apps/api/src/balance-payment-summary-engine.mjs` owns the smart `Balance de Pago` verdict, evaluating whether generated money covers credit cards and actual end-of-month expenses.
+- `apps/api/src/wealth-summary-engine.mjs` owns the smart `Patrimonio` verdict, score dimensions, liquidity/debt/investment/currency metrics, stress tests, benchmarks, and embedded research context.
+- `apps/api/src/email/budget-summary-email.mjs` owns email delivery using backend environment variables.
+- `apps/api/src/statement-parser.mjs` owns CSV, Banco Popular text, and CreditCardMovementsDetail parsing.
+- `apps/api/src/defaults.mjs` owns backend defaults and sample statement content.
+- `apps/web/proxy.conf.json` proxies Angular dev-server `/api` calls to the Node API.
+- `apps/web/src/app/core/models` holds shared statement, budget, insight, and import summary types.
+- `apps/web/src/app/core/services/api-client.service.ts` owns SPA HTTP calls to the backend.
+- `apps/web/src/app/core/services/spending-analytics.service.ts` owns derived spending, merchant, monthly, and budget calculations.
+- `apps/web/src/app/core/services/budget-store.service.ts` owns UI signals and backend state/import consumption.
+- `apps/web/src/app/core/services/personal-budget.service.ts` owns the independent manual monthly budget UI state and backend persistence calls.
+- `apps/web/src/app/core/services/conversion-budget.service.ts` owns the independent two-step conversion budget UI state and backend persistence calls.
+- `apps/web/src/app/core/services/wealth-position.service.ts` owns the `Patrimonio` UI state and backend persistence calls without calculating wealth summaries in the SPA.
+- `apps/web/src/app/features` holds focused UI components for personal budget, conversion budget, dashboard, spending analysis, import, and transactions; the app shell mounts the personal budget, conversion budget, and import/analysis views.
+- `apps/web/src/app/app.component.*` is now only the app shell and navigation composition.
 
 ## Data Assumptions
 
@@ -66,16 +66,16 @@ Build a mobile-friendly budgeting system split into a Node backend stack for per
 - Personal budget entries are manual and independent from imported statement data; the Node backend owns default categories and hidden fixed expense defaults, the SPA renders API state only, hidden fixed expenses are included in totals/summaries even when collapsed in the UI, and all USD values are converted into the DOP result at `1 USD = 60 DOP`.
 - Personal budget summaries are generated only in the backend and use user-provided result bands: negative means debt, `RD$100k+` is strong saving capacity, `RD$50k+` is good, `RD$20k+` is barely healthy, and lower positive values are fragile.
 - Personal budget cycles close on the 27th of each month; before or on the 27th the active cycle ends that month, after the 27th it ends on the 27th of the next month. The backend summary message uses the remaining-day countdown.
-- Any future app change that affects budget inputs, currencies, dashboard result semantics, API response shape, or Dominican context must include a review/update of `server/presupuesto-summary-engine.mjs` when needed.
+- Any future app change that affects budget inputs, currencies, dashboard result semantics, API response shape, or Dominican context must include a review/update of `apps/api/src/presupuesto-summary-engine.mjs` when needed.
 - The summary engine uses a DR context snapshot from public sources: BCRD exchange/inflation indicators and Ministerio de Trabajo 2026 minimum wage/canasta coverage references.
 - Conversion budget entries are manual and independent from imported statement data; custom rows can be added to the before-conversion group, one extra DOP entry can be added after conversion, the source amount used for calculations is net of `1.8%` plus `US$7`, and the conversion rate is fixed at `1 USD = 60 DOP`.
 - Balance summaries are generated only in the backend and use the final DOP result: negative means money is still owed; positive means money remains after paying cards and expenses.
-- Any future app change that affects payment balance inputs, currency conversion, final result semantics, or API response shape must include a review/update of `server/balance-payment-summary-engine.mjs` when needed.
+- Any future app change that affects payment balance inputs, currency conversion, final result semantics, or API response shape must include a review/update of `apps/api/src/balance-payment-summary-engine.mjs` when needed.
 - Budget summary emails are sent only by the backend through Resend; the SPA triggers `POST /api/budget-summary-email` and never handles email secrets or recipient configuration.
 - Wealth portfolio entries are manual and independent from imported statement data; the Node backend owns storage and all summary calculations.
 - Wealth summaries use fixed `1 USD = 60 DOP`, monthly income/expenses from `Presupuesto`, and portfolio assets/liabilities to calculate net worth, emergency reserve gaps, high-cost debt, weighted average debt rate, non-mortgage debt, productive asset share, real asset share, concentration, USD mismatch, inflation drag, financial independence progress, and stress scenarios.
 - Wealth engine research anchors include World Bank Global Findex, CFPB emergency fund and financial well-being guidance, Federal Reserve SHED, FDIC Money Smart, SEC diversification framing, IMF GFSR/WEO, BIS annual report context, BCRD inflation/exchange-rate/financial-sector/ENGIH/ENCFT references, DGII statistics, local wage references, and Budget Signal budget data.
-- Any future app change that affects wealth portfolio inputs, currencies, debt semantics, monthly budget linkage, API response shape, or RD/global context must include a review/update of `server/wealth-summary-engine.mjs` and its tests.
+- Any future app change that affects wealth portfolio inputs, currencies, debt semantics, monthly budget linkage, API response shape, or RD/global context must include a review/update of `apps/api/src/wealth-summary-engine.mjs` and its tests.
 
 ## Next Phases
 
