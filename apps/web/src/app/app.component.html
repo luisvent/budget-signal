@@ -4,6 +4,7 @@
     <button class="wordmark" type="button" (click)="showView('budget')" aria-label="Panel de Señal de Presupuesto">
       <span class="signal-dot" [attr.data-level]="budgetSignalLevel()" [style.color]="budgetSignalColor()"></span>
       <span>SEÑAL DE PRESUPUESTO</span>
+      <span class="mobile-status-badge" [attr.data-tone]="personalBudget.summary().tone">{{ personalBudget.summary().headline }}</span>
     </button>
 
     <nav class="desktop-nav" aria-label="Principal">

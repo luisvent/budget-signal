@@ -55,6 +55,7 @@ export class ConversionBudgetService {
   readonly afterConversionTotalUsd = computed(() => this.afterConversionTotal() / this.exchangeRate);
   readonly dopDeductionTotal = computed(() => this.calculateTotal(this.dopDeductions()));
   readonly finalDopResult = computed(() => this.afterConversionTotal() - this.dopDeductionTotal());
+  readonly finalDopResultUsd = computed(() => this.finalDopResult() / this.exchangeRate);
   readonly cashNeededUsd = computed(() => this.calculateSelectedTotal(this.sourceDeductions(), cashNeededUsdCategoryIds, cashNeededUsdCategoryNames));
   readonly cashNeededDop = computed(() => this.calculateSelectedTotal(this.dopDeductions(), cashNeededDopCategoryIds, cashNeededDopCategoryNames));
   readonly cashNeededDopUsd = computed(() => this.cashNeededDop() / this.exchangeRate);

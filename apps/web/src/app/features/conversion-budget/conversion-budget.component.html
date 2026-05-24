@@ -159,9 +159,12 @@
           <div class="conversion-final-result">
             <span class="label label-with-icon">
               <span class="dot-icon dot-icon-total" aria-hidden="true"></span>
-              <span>RESULTADO FINAL</span>
+              <span>RESULTADO FINAL - {{ flow.finalDopResult() >= 0 ? 'POSITIVO' : 'NEGATIVO' }}</span>
             </span>
-            <strong>{{ flow.formatDop(flow.finalDopResult()) }}</strong>
+            <span class="label label-with-icon">
+              <strong>{{ flow.formatDop(flow.finalDopResult()) }}</strong>
+              / <small>{{ flow.formatCurrency(flow.finalDopResultUsd(), 'USD') }}</small>
+            </span>
           </div>
         </section>
       </div>

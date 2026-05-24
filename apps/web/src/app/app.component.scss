@@ -212,6 +212,10 @@ select,
 	color: var(--border-visible);
 }
 
+.mobile-status-badge {
+	display: none;
+}
+
 .dot-icon {
 	--dot-x: 1px;
 	--dot-y: 1px;
@@ -1584,6 +1588,36 @@ th:last-child {
 
 	.wordmark {
 		font-size: 11px;
+		flex-wrap: wrap;
+		row-gap: 4px;
+	}
+
+	.mobile-status-badge {
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		border: 1px solid currentColor;
+		border-radius: 999px;
+		padding: 3px 8px;
+		color: var(--text-display);
+		font-family: 'Space Mono', monospace;
+		font-size: 9px;
+		line-height: 1;
+		text-overflow: ellipsis;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.mobile-status-badge[data-tone='success'] {
+		color: #2fbf71;
+	}
+
+	.mobile-status-badge[data-tone='warning'] {
+		color: #ffb020;
+	}
+
+	.mobile-status-badge[data-tone='danger'] {
+		color: #ff5a5f;
 	}
 
 	.manual-dashboard {

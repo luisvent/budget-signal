@@ -7,7 +7,8 @@ import { MoneyInputDirective } from '../../shared/money-input.directive';
 @Component({
   selector: 'app-conversion-budget',
   imports: [CommonModule, FormsModule, MoneyInputDirective],
-  templateUrl: './conversion-budget.component.html'
+  templateUrl: './conversion-budget.component.html',
+  styleUrl: './conversion-budget.component.scss'
 })
 export class ConversionBudgetComponent {
   readonly flow = inject(ConversionBudgetService);

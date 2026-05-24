@@ -1,0 +1,78 @@
+/* ===================================================================
+ * Mobile layout for Balance de Pago (≤620px).
+ *
+ * Splits the view into distinct, outlined cards so the three logical
+ * sections — ANTES DE CONVERTIR, DESPUÉS DE CONVERTIR, EFECTIVO
+ * NECESARIO — read as separate blocks on iPhone.
+ * =================================================================== */
+
+/* Highlight the primary input in each conversion section so the entry
+ * point reads as the key field versus the deduction rows. Applies on
+ * desktop and mobile. */
+:host ::ng-deep .conversion-start-row input,
+:host ::ng-deep .conversion-after-addition input {
+	border-color: var(--text-display);
+	background: color-mix(in srgb, var(--text-display) 8%, var(--black));
+	color: var(--text-display);
+	font-size: 16px;
+	font-weight: 600;
+}
+
+:host ::ng-deep .conversion-start-row input:focus,
+:host ::ng-deep .conversion-after-addition input:focus {
+	border-color: var(--text-display);
+	background: color-mix(in srgb, var(--text-display) 14%, var(--black));
+}
+
+:host ::ng-deep .conversion-start-row select {
+	border-color: var(--text-display);
+	color: var(--text-display);
+}
+
+:host ::ng-deep .conversion-start-row .label,
+:host ::ng-deep .conversion-after-addition .label {
+	color: var(--text-display);
+}
+
+@media (max-width: 620px) {
+	:host ::ng-deep .conversion-budget-panel {
+		background: transparent;
+		border: 0;
+		padding: 0;
+	}
+
+	:host ::ng-deep .conversion-budget-grid {
+		gap: 18px;
+	}
+
+	:host ::ng-deep .conversion-editor {
+		gap: 18px;
+	}
+
+	/* Result summary becomes its own card. */
+	:host ::ng-deep .conversion-summary {
+		gap: 14px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--surface);
+		padding: 16px;
+	}
+
+	/* ANTES DE CONVERTIR and DESPUÉS DE CONVERTIR each become a card. */
+	:host ::ng-deep .budget-ledger {
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--surface);
+		padding: 16px;
+	}
+
+	/* EFECTIVO NECESARIO sits below the editor with a clear margin. */
+	:host ::ng-deep .conversion-cash-needed {
+		margin: 18px 0 0;
+		border-top: 0;
+	}
+
+	:host ::ng-deep .section-heading {
+		margin-bottom: 4px;
+	}
+}
