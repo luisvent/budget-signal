@@ -1,0 +1,83 @@
+<section class="chart-dashboard" aria-label="Gráfico de gasto por categoría">
+  <article class="chart-panel chart-panel-wide">
+    <div class="section-heading">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-chart" aria-hidden="true"></span>
+          <span>MEZCLA DE GASTO</span>
+        </p>
+        <h2>Toca una barra para ver el detalle</h2>
+      </div>
+      <span class="system-status">PRINCIPALES {{ categoryChart().length }}</span>
+    </div>
+
+    @if (categoryChart().length > 0) {
+      <div class="bar-chart" aria-label="Categorías con mayor gasto por monto">
+        @for (bar of categoryChart(); track bar.category) {
+          <button
+            class="category-column"
+            type="button"
+            [class.active]="bar.key === activeCategory().key"
+            [attr.aria-pressed]="bar.key === activeCategory().key"
+            [attr.aria-label]="store.formatCategory(bar.category) + ', gasto ' + store.formatCurrency(bar.spent, bar.currency) + ', ' + bar.count + ' cargos'"
+            (click)="selectCategory(bar.key)">
+            <div class="bar-stack" aria-hidden="true">
+              <span class="bar-fill" [style.height.%]="bar.height" [style.opacity]="bar.opacity"></span>
+            </div>
+            <div class="bar-label">
+              <span>{{ store.formatCategory(bar.category) }}</span>
+              <strong>{{ store.formatCurrency(bar.spent, bar.currency) }}</strong>
+              <small>{{ bar.currency }} / {{ bar.count }} cargos</small>
+            </div>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span>[SIN DATOS DE CATEGORÍA]</span>
+      </div>
+    }
+  </article>
+
+  <article class="chart-panel category-detail">
+    <div class="section-heading compact">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-ledger" aria-hidden="true"></span>
+          <span>DETALLE DE CATEGORÍA</span>
+        </p>
+        <h2>{{ activeCategoryLabel() }}</h2>
+      </div>
+      @if (activeCategoryTotal(); as activeTotal) {
+        <span class="system-status">{{ activeTotal.count }} CARGOS</span>
+      }
+    </div>
+
+    @if (activeCategoryTotal(); as activeTotal) {
+      <div class="category-detail-total">
+        <span class="label label-with-icon">
+          <span class="dot-icon dot-icon-total" aria-hidden="true"></span>
+          <span>TOTAL DE CATEGORÍA</span>
+        </span>
+        <strong>{{ store.formatCurrency(activeTotal.spent, activeTotal.currency) }}</strong>
+      </div>
+
+      <div class="category-transaction-list" aria-label="Transacciones de la categoría seleccionada">
+        @for (transaction of activeCategoryTransactions(); track transaction.id) {
+          <article class="category-transaction">
+            <div>
+              <span class="label">{{ transaction.date }}</span>
+              <strong>{{ transaction.merchant }}</strong>
+              <small>{{ transaction.source }}</small>
+            </div>
+            <strong>{{ store.formatTransactionAmount(transaction) }}</strong>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span>[SIN CATEGORÍA SELECCIONADA]</span>
+      </div>
+    }
+  </article>
+</section>

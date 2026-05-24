@@ -1,0 +1,10 @@
+<div class="budget-pressure" [class.compact]="compact()" [attr.data-tone]="pressure().tone" aria-label="Presión del presupuesto">
+  <div class="budget-pressure-header">
+    <span class="label">PRESIÓN</span>
+    <strong>{{ pressure().score }}%</strong>
+  </div>
+  <div class="budget-pressure-track" aria-hidden="true">
+    <span [style.width.%]="pressure().score"></span>
+  </div>
+  <small>{{ pressure().detail }}</small>
+</div>

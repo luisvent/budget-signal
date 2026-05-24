@@ -1,0 +1,23 @@
+services:
+  budget-signal:
+    build:
+      context: .
+    image: budget-signal:latest
+    container_name: budget-signal
+    restart: unless-stopped
+    ports:
+      - "8734:8734"
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8734"
+      BUDGET_SIGNAL_DATA_DIR: "/data"
+      CORS_ORIGIN: "${CORS_ORIGIN:-*}"
+      RESEND_API_KEY: "${RESEND_API_KEY:-}"
+      BUDGET_SUMMARY_EMAIL_TO: "${BUDGET_SUMMARY_EMAIL_TO:-}"
+      BUDGET_SUMMARY_EMAIL_FROM: "${BUDGET_SUMMARY_EMAIL_FROM:-Budget Signal <onboarding@resend.dev>}"
+      BUDGET_SUMMARY_EMAIL_SUBJECT_PREFIX: "${BUDGET_SUMMARY_EMAIL_SUBJECT_PREFIX:-Budget Signal}"
+    volumes:
+      - budget-signal-data:/data
+
+volumes:
+  budget-signal-data:

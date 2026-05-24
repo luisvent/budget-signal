@@ -1,0 +1,117 @@
+<main class="app-shell" [class.light-mode]="store.theme() === 'light'">
+  <header class="topbar">
+    <button class="wordmark" type="button" (click)="showView('budget')" aria-label="Panel de Señal de Presupuesto">
+      <span class="signal-dot" [attr.data-level]="budgetSignalLevel()" [style.color]="budgetSignalColor()"></span>
+      <span>SEÑAL DE PRESUPUESTO</span>
+    </button>
+
+    <nav class="desktop-nav" aria-label="Principal">
+      <button type="button" [class.active-view]="activeView() === 'budget'" [attr.aria-current]="activeView() === 'budget' ? 'page' : null" (click)="showView('budget')">
+        <span class="dot-icon dot-icon-budget" aria-hidden="true"></span>
+        <span>PRESUPUESTO</span>
+      </button>
+      <button type="button" [class.active-view]="activeView() === 'payment'" [attr.aria-current]="activeView() === 'payment' ? 'page' : null" (click)="showView('payment')">
+        <span class="dot-icon dot-icon-exchange" aria-hidden="true"></span>
+        <span>BALANCE</span>
+      </button>
+      <button type="button" [class.active-view]="activeView() === 'wealth'" [attr.aria-current]="activeView() === 'wealth' ? 'page' : null" (click)="showView('wealth')">
+        <span class="dot-icon dot-icon-wealth" aria-hidden="true"></span>
+        <span>PATRIMONIO</span>
+      </button>
+      <button type="button" [class.active-view]="activeView() === 'import'" [attr.aria-current]="activeView() === 'import' ? 'page' : null" (click)="showView('import')">
+        <span class="dot-icon dot-icon-import" aria-hidden="true"></span>
+        <span>IMPORTAR</span>
+      </button>
+    </nav>
+  </header>
+
+  <section class="manual-dashboard" aria-labelledby="manual-dashboard-title">
+    <div class="manual-dashboard-panel">
+      <div class="section-heading compact">
+        <div>
+          <p class="label label-with-icon">
+            <span class="dot-icon dot-icon-panel" aria-hidden="true"></span>
+            <span>RESUMEN</span>
+          </p>
+          <h2 id="manual-dashboard-title">Dashboard</h2>
+          <span class="system-status" aria-live="polite">{{ store.budgetEmailStatus() }}</span>
+        </div>
+        <button class="secondary-button dashboard-email-button" type="button" [disabled]="store.sendingBudgetEmail()" (click)="store.sendBudgetSummaryEmail()">
+          <span class="dot-icon dot-icon-upload" aria-hidden="true"></span>
+          <span>{{ store.sendingBudgetEmail() ? 'ENVIANDO' : 'ENVIAR RESUMEN' }}</span>
+        </button>
+      </div>
+
+      <div class="manual-summary-grid" aria-label="Resultados principales">
+        <button class="manual-summary-card" type="button" [class.active]="activeView() === 'budget'" (click)="showView('budget')">
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-budget" aria-hidden="true"></span>
+            <span>PRESUPUESTO</span>
+          </span>
+          <strong>{{ personalBudget.formatCurrencyBreakdown(personalBudget.netTotals()) }}</strong>
+          <span class="manual-summary-status" [attr.data-tone]="personalBudget.summary().tone">{{ personalBudget.summary().headline }}</span>
+          <app-budget-pressure-bar [pressure]="personalBudget.pressure()" [compact]="true"></app-budget-pressure-bar>
+          <small>{{ personalBudget.summary().message }}</small>
+        </button>
+
+        <button class="manual-summary-card" type="button" [class.active]="activeView() === 'payment'" (click)="showView('payment')">
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-exchange" aria-hidden="true"></span>
+            <span>BALANCE DE PAGO</span>
+          </span>
+          <strong>{{ paymentBalance.formatDop(paymentBalance.finalDopResult()) }}</strong>
+          <span class="manual-summary-status" [attr.data-tone]="paymentBalance.summary().tone">{{ paymentBalance.summary().headline }}</span>
+          <small>{{ paymentBalance.summary().message }}</small>
+        </button>
+
+        <button class="manual-summary-card" type="button" [class.active]="activeView() === 'wealth'" (click)="showView('wealth')">
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-wealth" aria-hidden="true"></span>
+            <span>PATRIMONIO</span>
+          </span>
+          <strong>{{ wealth.formatDop(wealth.summary().netWorthDop) }}</strong>
+          <span class="manual-summary-status" [attr.data-tone]="wealth.summary().tone">{{ wealth.summary().headline }}</span>
+          <small>{{ wealth.summary().message }}</small>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="manual-view" aria-live="polite">
+    @if (activeView() === 'budget') {
+      <app-personal-budget />
+    } @else if (activeView() === 'payment') {
+      <app-conversion-budget />
+    } @else if (activeView() === 'wealth') {
+      <app-wealth-position />
+    } @else {
+      <div class="statement-analysis-view">
+        <app-statement-importer />
+        <app-dashboard-summary />
+        <app-dashboard-charts />
+        <app-insight-grid />
+        <app-spending-analysis />
+        <app-recent-transactions />
+      </div>
+    }
+  </section>
+
+  <nav class="mobile-nav" aria-label="Principal móvil">
+    <button type="button" [class.active-view]="activeView() === 'budget'" [attr.aria-current]="activeView() === 'budget' ? 'page' : null" (click)="showView('budget')">
+      <span class="dot-icon dot-icon-budget" aria-hidden="true"></span>
+      <span>PRESUPUESTO</span>
+    </button>
+    <button type="button" [class.active-view]="activeView() === 'payment'" [attr.aria-current]="activeView() === 'payment' ? 'page' : null" (click)="showView('payment')">
+      <span class="dot-icon dot-icon-exchange" aria-hidden="true"></span>
+      <span>BALANCE</span>
+    </button>
+    <button type="button" [class.active-view]="activeView() === 'wealth'" [attr.aria-current]="activeView() === 'wealth' ? 'page' : null" (click)="showView('wealth')">
+      <span class="dot-icon dot-icon-wealth" aria-hidden="true"></span>
+      <span>PATR.</span>
+    </button>
+    <button type="button" [class.active-view]="activeView() === 'import'" [attr.aria-current]="activeView() === 'import' ? 'page' : null" (click)="showView('import')">
+      <span class="dot-icon dot-icon-import" aria-hidden="true"></span>
+      <span>IMPORT.</span>
+    </button>
+  </nav>
+</main>

@@ -1,0 +1,52 @@
+<section class="hero" id="dashboard" aria-labelledby="dashboard-title">
+  <div class="hero-copy">
+    <p class="label label-with-icon">
+      <span class="dot-icon dot-icon-cycle" aria-hidden="true"></span>
+      <span>GASTO DEL CICLO</span>
+    </p>
+    <h1 id="dashboard-title">{{ store.formatCurrencyBreakdown(store.spendTotalsByCurrency()) }}</h1>
+    <p class="hero-meta">
+      {{ store.transactions().length }} cargos / {{ store.periodRange() }} / {{ store.importSummary().files }} {{ store.importSummary().files === 1 ? 'estado' : 'estados' }} / {{ store.sourceCount() }} {{ store.sourceCount() === 1 ? 'origen' : 'orígenes' }}
+    </p>
+  </div>
+
+  <aside class="hero-instrument" aria-label="Carga de presupuesto">
+    <div class="instrument-topline">
+      <span class="label label-with-icon">
+        <span class="dot-icon dot-icon-load" aria-hidden="true"></span>
+        <span>CARGA DE PRESUPUESTO</span>
+      </span>
+      <strong [ngClass]="store.toneForRatio(store.budgetUsage())">{{ store.formatRatio(store.budgetUsage()) }}</strong>
+    </div>
+
+    <div class="segmented-bar hero-bar" [ngClass]="store.toneForRatio(store.budgetUsage())" role="meter" aria-label="Presupuesto total usado">
+      @for (segment of heroSegments; track segment) {
+        <span class="segment" [class.filled]="segment < store.filledSegments(store.budgetUsage(), heroSegments.length)"></span>
+      }
+    </div>
+
+    <div class="instrument-grid">
+      <div>
+        <span class="label label-with-icon">
+          <span class="dot-icon dot-icon-pace" aria-hidden="true"></span>
+          <span>RITMO</span>
+        </span>
+        <strong>{{ store.formatCurrencyBreakdown(store.averageDailySpendByCurrency()) }}/DÍA</strong>
+      </div>
+      <div>
+        <span class="label label-with-icon">
+          <span class="dot-icon dot-icon-project" aria-hidden="true"></span>
+          <span>PROYECTADO</span>
+        </span>
+        <strong>{{ store.formatCurrencyBreakdown(store.projectedSpendByCurrency()) }}</strong>
+      </div>
+      <div>
+        <span class="label label-with-icon">
+          <span class="dot-icon dot-icon-remaining" aria-hidden="true"></span>
+          <span>RESTANTE</span>
+        </span>
+        <strong [ngClass]="store.hasNegativeRemainingBudget() ? 'danger' : 'success'">{{ store.formatCurrencyBreakdown(store.remainingBudgetByCurrency()) }}</strong>
+      </div>
+    </div>
+  </aside>
+</section>

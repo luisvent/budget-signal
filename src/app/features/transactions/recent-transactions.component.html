@@ -1,0 +1,42 @@
+<section class="transactions-panel" aria-labelledby="transactions-title">
+  <div class="section-heading compact">
+    <div>
+      <p class="label label-with-icon">
+        <span class="dot-icon dot-icon-ledger" aria-hidden="true"></span>
+        <span>MOVIMIENTOS RECIENTES</span>
+      </p>
+      <h2 id="transactions-title">Últimas filas del estado</h2>
+    </div>
+  </div>
+
+  @if (store.recentTransactions().length > 0) {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Comercio</th>
+            <th>Categoría</th>
+            <th>Origen</th>
+            <th>Gasto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (transaction of store.recentTransactions(); track transaction.id) {
+            <tr>
+              <td>{{ transaction.date }}</td>
+              <td>{{ transaction.merchant }}</td>
+              <td>{{ store.formatCategory(transaction.category) }}</td>
+              <td>{{ transaction.source }}</td>
+              <td>{{ store.formatTransactionAmount(transaction) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span>[SIN TRANSACCIONES]</span>
+    </div>
+  }
+</section>

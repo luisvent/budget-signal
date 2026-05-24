@@ -1,0 +1,130 @@
+<section class="split-layout" aria-label="Análisis de gastos">
+  <div class="rank-panel">
+    <div class="section-heading">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-category" aria-hidden="true"></span>
+          <span>ANÁLISIS POR CATEGORÍA</span>
+        </p>
+        <h2>Dónde se concentra el estado</h2>
+      </div>
+    </div>
+
+    <div class="category-list">
+      @for (category of store.categoryTotals().slice(0, 5); track category.category + category.currency) {
+        <article class="category-row">
+          <div>
+            <span class="label">{{ store.formatCategory(category.category) }} / {{ category.currency }}</span>
+            <strong>{{ store.formatCurrency(category.spent, category.currency) }}</strong>
+          </div>
+          <div class="mini-bar" role="presentation">
+            @for (segment of barSegments; track segment) {
+              <span [class.filled]="segment < store.filledSegments(category.spent / (store.categoryTotals()[0].spent || 1), barSegments.length)"></span>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+
+  <div class="recurring-panel">
+    <div class="section-heading compact">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-merchant" aria-hidden="true"></span>
+          <span>ESTABLECIMIENTOS</span>
+        </p>
+        <h2>Toca un comercio para ver sus cargos</h2>
+      </div>
+    </div>
+
+    @if (merchantList().length > 0) {
+      <div class="merchant-list drilldown-list" aria-label="Establecimientos con cargos">
+        @for (merchant of merchantList(); track merchant.key) {
+          <button
+            class="merchant-row merchant-action"
+            type="button"
+            [class.active]="merchant.key === activeMerchant()?.key"
+            [attr.aria-pressed]="merchant.key === activeMerchant()?.key"
+            [attr.aria-label]="merchant.merchant + ', ' + merchant.count + ' cargos, ' + store.formatCurrencyBreakdown(merchant.totals)"
+            (click)="selectMerchant(merchant.key)">
+            <span class="merchant-name">
+              <span class="dot-icon dot-icon-merchant" aria-hidden="true"></span>
+              <span>{{ merchant.merchant }}</span>
+            </span>
+            <strong>{{ store.formatCurrencyBreakdown(merchant.totals) }}</strong>
+            <small>{{ merchant.count }} cargos</small>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span>[SIN ESTABLECIMIENTOS]</span>
+      </div>
+    }
+
+    <div class="panel-divider"></div>
+
+    <div class="section-heading compact">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-ledger" aria-hidden="true"></span>
+          <span>CARGOS DEL ESTABLECIMIENTO</span>
+        </p>
+        <h2>{{ activeMerchant()?.merchant ?? 'Selecciona un comercio' }}</h2>
+      </div>
+      @if (activeMerchant(); as merchant) {
+        <span class="system-status">{{ merchant.count }} CARGOS</span>
+      }
+    </div>
+
+    @if (activeMerchant(); as merchant) {
+      <div class="merchant-detail-total">
+        <span class="label label-with-icon">
+          <span class="dot-icon dot-icon-total" aria-hidden="true"></span>
+          <span>TOTAL DEL COMERCIO</span>
+        </span>
+        <strong>{{ store.formatCurrencyBreakdown(merchant.totals) }}</strong>
+      </div>
+
+      <div class="category-transaction-list merchant-transaction-list" aria-label="Transacciones del establecimiento seleccionado">
+        @for (transaction of activeMerchantTransactions(); track transaction.id) {
+          <article class="category-transaction">
+            <div>
+              <span class="label">{{ transaction.date }}</span>
+              <strong>{{ store.formatCategory(transaction.category) }}</strong>
+              <small>{{ transaction.source }}</small>
+            </div>
+            <strong>{{ store.formatTransactionAmount(transaction) }}</strong>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state compact-empty">
+        <span>[SELECCIONA UN COMERCIO]</span>
+      </div>
+    }
+
+    <div class="panel-divider"></div>
+
+    <div class="section-heading compact">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-calendar" aria-hidden="true"></span>
+          <span>CORTE MENSUAL</span>
+        </p>
+        <h2>Movimiento del estado</h2>
+      </div>
+    </div>
+
+    <div class="merchant-list">
+      @for (month of store.monthlyTotals(); track month.month + month.currency) {
+        <article class="merchant-row compact-row">
+          <span>{{ month.month }}</span>
+          <strong>{{ store.formatCurrency(month.spent, month.currency) }}</strong>
+          <small>{{ month.currency }} / {{ month.count }} cargos</small>
+        </article>
+      }
+    </div>
+  </div>
+</section>

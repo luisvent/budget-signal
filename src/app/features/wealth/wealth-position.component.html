@@ -1,0 +1,249 @@
+<section class="wealth-position" id="wealth-position" aria-labelledby="wealth-position-title">
+  <div class="wealth-position-panel">
+    <div class="section-heading">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-wealth" aria-hidden="true"></span>
+          <span>PATRIMONIO</span>
+        </p>
+        <h2 id="wealth-position-title">Posición financiera</h2>
+      </div>
+      <span class="system-status">ENGINE / RD + GLOBAL</span>
+    </div>
+
+    <div class="wealth-layout">
+      <aside class="wealth-overview" aria-label="Resumen patrimonial">
+        <div class="wealth-net-worth" [attr.data-tone]="wealth.summary().tone">
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-total" aria-hidden="true"></span>
+            <span>PATRIMONIO NETO</span>
+          </span>
+          <strong>{{ wealth.formatDop(wealth.summary().netWorthDop) }}</strong>
+          <small>{{ wealth.summary().headline }}</small>
+        </div>
+
+        <div class="wealth-metrics" aria-label="Métricas principales de patrimonio">
+          <div class="wealth-total-positive">
+            <span class="label">+ TOTAL</span>
+            <strong>{{ wealth.formatDop(wealth.summary().totalAssetsDop) }}</strong>
+          </div>
+          <div class="wealth-total-negative">
+            <span class="label">- TOTAL</span>
+            <strong>{{ wealth.formatDop(wealth.summary().totalLiabilitiesDop) }}</strong>
+          </div>
+        </div>
+      </aside>
+
+      <div class="wealth-main">
+        <article class="wealth-analysis-panel" aria-label="Resumen de situacion patrimonial">
+          <div class="section-heading compact">
+            <div>
+              <p class="label label-with-icon">
+                <span class="dot-icon dot-icon-analyze" aria-hidden="true"></span>
+                <span>RESUMEN</span>
+              </p>
+              <h2>{{ wealth.summary().headline }}</h2>
+            </div>
+          </div>
+
+          <div class="wealth-summary-text">
+            <p>{{ wealth.summary().message }}</p>
+            <p>{{ currentSituation() }}</p>
+          </div>
+        </article>
+
+        <article class="wealth-chart-panel" aria-label="Chart de activos">
+          <div class="section-heading compact">
+            <div>
+              <p class="label label-with-icon">
+                <span class="dot-icon dot-icon-chart" aria-hidden="true"></span>
+                <span>ACTIVOS</span>
+              </p>
+              <h2>Distribución de activos</h2>
+            </div>
+            <span class="system-status">{{ assetChartItems().length }} LÍNEAS</span>
+          </div>
+
+          @if (hasAssets()) {
+            <div class="wealth-chart-list">
+              @for (item of assetChartItems(); track item.id) {
+                <div class="wealth-chart-row" data-kind="asset">
+                  <div>
+                    <span class="label">ACTIVO</span>
+                    <strong>{{ item.label }}</strong>
+                  </div>
+                  <div class="wealth-chart-track" aria-hidden="true">
+                    <span [style.width.%]="item.ratio * 100"></span>
+                  </div>
+                  <strong>{{ wealth.formatDop(item.amountDop) }}</strong>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <span>[SIN ACTIVOS REGISTRADOS]</span>
+            </div>
+          }
+        </article>
+
+        <div class="wealth-ledgers">
+          <section class="wealth-ledger" aria-labelledby="wealth-assets-title">
+            <div class="wealth-ledger-title">
+              <span class="label label-with-icon">
+                <span class="dot-icon dot-icon-income" aria-hidden="true"></span>
+                <span>DINERO / ACTIVOS</span>
+              </span>
+              <strong id="wealth-assets-title">Reservas</strong>
+            </div>
+
+            <div class="wealth-entry-list">
+              @for (asset of wealth.assets(); track asset.id) {
+                <div class="wealth-asset-row">
+                  <span class="wealth-entry-name">{{ asset.name }}</span>
+                  <select [name]="'asset-category-' + asset.id" [attr.aria-label]="'Tipo de ' + asset.name" [ngModel]="asset.category" (ngModelChange)="wealth.updateAssetCategory(asset.id, $event)">
+                    @for (category of wealth.assetCategories; track category.value) {
+                      <option [value]="category.value">{{ category.label }}</option>
+                    }
+                  </select>
+                  <select [name]="'asset-currency-' + asset.id" [attr.aria-label]="'Moneda de ' + asset.name" [ngModel]="asset.currency" (ngModelChange)="wealth.updateAssetCurrency(asset.id, $event)">
+                    <option value="DOP">DOP</option>
+                    <option value="USD">USD</option>
+                  </select>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'asset-amount-' + asset.id" [attr.aria-label]="'Monto de ' + asset.name" [ngModel]="asset.amount" (ngModelChange)="wealth.updateAssetAmount(asset.id, $event)">
+                  <button class="ghost-button wealth-entry-remove" type="button" [attr.aria-label]="'Quitar ' + asset.name" (click)="wealth.removeAsset(asset.id)">
+                    <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+                    <span>QUITAR</span>
+                  </button>
+                </div>
+              }
+            </div>
+
+            @if (addingAsset()) {
+              <form class="wealth-add-asset-form" (ngSubmit)="addAsset()">
+                <label>
+                  <span class="label">NOMBRE</span>
+                  <input type="text" name="assetName" autocomplete="off" [ngModel]="assetName()" (ngModelChange)="assetName.set($event)">
+                </label>
+                <label>
+                  <span class="label">TIPO</span>
+                  <select name="assetCategory" [ngModel]="assetCategory()" (ngModelChange)="setAssetCategory($event)">
+                    @for (category of wealth.assetCategories; track category.value) {
+                      <option [value]="category.value">{{ category.label }}</option>
+                    }
+                  </select>
+                </label>
+                <label>
+                  <span class="label">MONEDA</span>
+                  <select name="assetCurrency" [ngModel]="assetCurrency()" (ngModelChange)="setAssetCurrency($event)">
+                    <option value="DOP">DOP</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </label>
+                <label>
+                  <span class="label">MONTO</span>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" name="assetAmount" [ngModel]="assetAmount()" (ngModelChange)="assetAmount.set($event)">
+                </label>
+                <button class="secondary-button" type="submit" [disabled]="assetName().trim().length === 0">
+                  <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
+                  <span>GUARDAR</span>
+                </button>
+                <button class="ghost-button" type="button" (click)="cancelAsset()">
+                  <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+                  <span>CANCELAR</span>
+                </button>
+              </form>
+            } @else {
+              <button class="secondary-button" type="button" (click)="showAssetForm()">
+                <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
+                <span>AÑADIR ACTIVO</span>
+              </button>
+            }
+          </section>
+
+          <section class="wealth-ledger" aria-labelledby="wealth-liabilities-title">
+            <div class="wealth-ledger-title">
+              <span class="label label-with-icon">
+                <span class="dot-icon dot-icon-expense" aria-hidden="true"></span>
+                <span>DEUDAS</span>
+              </span>
+              <strong id="wealth-liabilities-title">Obligaciones</strong>
+            </div>
+
+            <div class="wealth-entry-list">
+              @for (liability of wealth.liabilities(); track liability.id) {
+                <div class="wealth-liability-row">
+                  <span class="wealth-entry-name">{{ liability.name }}</span>
+                  <select [name]="'liability-category-' + liability.id" [attr.aria-label]="'Tipo de ' + liability.name" [ngModel]="liability.category" (ngModelChange)="wealth.updateLiabilityCategory(liability.id, $event)">
+                    @for (category of wealth.liabilityCategories; track category.value) {
+                      <option [value]="category.value">{{ category.label }}</option>
+                    }
+                  </select>
+                  <select [name]="'liability-currency-' + liability.id" [attr.aria-label]="'Moneda de ' + liability.name" [ngModel]="liability.currency" (ngModelChange)="wealth.updateLiabilityCurrency(liability.id, $event)">
+                    <option value="DOP">DOP</option>
+                    <option value="USD">USD</option>
+                  </select>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'liability-amount-' + liability.id" [attr.aria-label]="'Balance de ' + liability.name" [ngModel]="liability.amount" (ngModelChange)="wealth.updateLiabilityAmount(liability.id, $event)">
+                  <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'liability-rate-' + liability.id" [attr.aria-label]="'Tasa de ' + liability.name" [ngModel]="liability.interestRate" (ngModelChange)="wealth.updateLiabilityInterestRate(liability.id, $event)">
+                  <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'liability-payment-' + liability.id" [attr.aria-label]="'Pago mensual de ' + liability.name" [ngModel]="liability.monthlyPayment" (ngModelChange)="wealth.updateLiabilityMonthlyPayment(liability.id, $event)">
+                  <button class="ghost-button wealth-entry-remove" type="button" [attr.aria-label]="'Quitar ' + liability.name" (click)="wealth.removeLiability(liability.id)">
+                    <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+                    <span>QUITAR</span>
+                  </button>
+                </div>
+              }
+            </div>
+
+            @if (addingLiability()) {
+              <form class="wealth-add-liability-form" (ngSubmit)="addLiability()">
+                <label>
+                  <span class="label">NOMBRE</span>
+                  <input type="text" name="liabilityName" autocomplete="off" [ngModel]="liabilityName()" (ngModelChange)="liabilityName.set($event)">
+                </label>
+                <label>
+                  <span class="label">TIPO</span>
+                  <select name="liabilityCategory" [ngModel]="liabilityCategory()" (ngModelChange)="setLiabilityCategory($event)">
+                    @for (category of wealth.liabilityCategories; track category.value) {
+                      <option [value]="category.value">{{ category.label }}</option>
+                    }
+                  </select>
+                </label>
+                <label>
+                  <span class="label">MONEDA</span>
+                  <select name="liabilityCurrency" [ngModel]="liabilityCurrency()" (ngModelChange)="setLiabilityCurrency($event)">
+                    <option value="DOP">DOP</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </label>
+                <label>
+                  <span class="label">BALANCE</span>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" name="liabilityAmount" [ngModel]="liabilityAmount()" (ngModelChange)="liabilityAmount.set($event)">
+                </label>
+                <label>
+                  <span class="label">TASA %</span>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" name="liabilityInterestRate" [ngModel]="liabilityInterestRate()" (ngModelChange)="liabilityInterestRate.set($event)">
+                </label>
+                <label>
+                  <span class="label">PAGO MES</span>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" name="liabilityMonthlyPayment" [ngModel]="liabilityMonthlyPayment()" (ngModelChange)="liabilityMonthlyPayment.set($event)">
+                </label>
+                <button class="secondary-button" type="submit" [disabled]="liabilityName().trim().length === 0">
+                  <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
+                  <span>GUARDAR</span>
+                </button>
+                <button class="ghost-button" type="button" (click)="cancelLiability()">
+                  <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+                  <span>CANCELAR</span>
+                </button>
+              </form>
+            } @else {
+              <button class="secondary-button" type="button" (click)="showLiabilityForm()">
+                <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
+                <span>AÑADIR DEUDA</span>
+              </button>
+            }
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

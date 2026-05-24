@@ -1,0 +1,162 @@
+<section class="personal-budget" id="personal-budget" aria-labelledby="personal-budget-title">
+  <div class="personal-budget-panel">
+    <div class="section-heading">
+      <div>
+        <p class="label label-with-icon">
+          <span class="dot-icon dot-icon-budget" aria-hidden="true"></span>
+          <span>PRESUPUESTO PERSONAL</span>
+        </p>
+        <h2 id="personal-budget-title">Flujo mensual</h2>
+      </div>
+      <span class="system-status">DOP / 1 USD = RD$60</span>
+    </div>
+
+    <div class="personal-budget-grid">
+      <aside class="personal-budget-summary" aria-label="Resultado del presupuesto personal">
+        <div class="budget-result-stack">
+          @for (netTotal of budget.netTotals(); track netTotal.currency) {
+            <div class="budget-result" [class.success]="netTotal.amount >= 0" [class.danger]="netTotal.amount < 0">
+              <span class="label label-with-icon">
+                <span class="dot-icon dot-icon-total" aria-hidden="true"></span>
+                <span>RESULTADO {{ netTotal.currency }}</span>
+              </span>
+              <strong>{{ budget.formatCurrency(netTotal.amount, netTotal.currency) }}</strong>
+              <small>Ingresos - gastos convertidos a DOP</small>
+            </div>
+          }
+        </div>
+
+        <div class="budget-cycle-spotlight" [attr.data-tone]="cycleTone()" aria-label="Días restantes al cierre del presupuesto">
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-cycle" aria-hidden="true"></span>
+            <span>CIERRE 27</span>
+          </span>
+          <strong>{{ cycleDaysLabel() }}</strong>
+          <small>{{ cycleCaption() }}</small>
+        </div>
+
+        <app-budget-pressure-bar [pressure]="budget.pressure()"></app-budget-pressure-bar>
+
+        <div class="budget-summary-totals" aria-label="Totales personales">
+          <div>
+            <span class="label label-with-icon">
+              <span class="dot-icon dot-icon-expense" aria-hidden="true"></span>
+              <span>GASTOS</span>
+            </span>
+            <strong>{{ budget.formatCurrencyBreakdown(budget.expenseTotals()) }}</strong>
+          </div>
+          <div>
+            <span class="label label-with-icon">
+              <span class="dot-icon dot-icon-income" aria-hidden="true"></span>
+              <span>INGRESOS</span>
+            </span>
+            <strong>{{ budget.formatCurrencyBreakdown(budget.incomeTotals()) }}</strong>
+          </div>
+        </div>
+      </aside>
+
+      <div class="personal-budget-editor">
+        <section class="budget-ledger" aria-labelledby="expense-title">
+          <div class="budget-ledger-title">
+            <span class="label label-with-icon">
+              <span class="dot-icon dot-icon-expense" aria-hidden="true"></span>
+              <span>GASTOS</span>
+            </span>
+            <strong id="expense-title">Salidas</strong>
+          </div>
+
+          <button class="secondary-button" type="button" [attr.aria-pressed]="showFixedExpenses()" (click)="toggleFixedExpenses()">
+            <span class="dot-icon dot-icon-ledger" aria-hidden="true"></span>
+            <span>{{ showFixedExpenses() ? 'OCULTAR FIJOS' : 'MOSTRAR FIJOS (' + fixedExpenseCount() + ')' }}</span>
+          </button>
+
+          <div class="budget-entry-list">
+            @for (expense of displayedExpenses(); track expense.id) {
+              <div class="budget-entry-row" [class.removable]="expense.custom">
+                <div class="budget-entry-identity">
+                  @for (image of categoryImages(expense.name); track image.src + image.alt + image.usd) {
+                    <figure class="budget-category-image">
+                      <img [src]="image.src" [alt]="image.alt" width="58" height="36" decoding="async">
+                      @if (image.usd) {
+                        <span>USD</span>
+                      }
+                    </figure>
+                  }
+                  <span class="budget-entry-name" [attr.data-expense-level]="expense.hiddenByDefault ? null : expenseLevel(expense)">{{ expense.name }}</span>
+                </div>
+                <select [name]="'expense-currency-' + expense.id" [attr.aria-label]="'Moneda de ' + expense.name" [ngModel]="expense.currency" (ngModelChange)="budget.updateExpenseCurrency(expense.id, $event)">
+                  <option value="DOP">DOP</option>
+                  <option value="USD">USD</option>
+                </select>
+                <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'expense-amount-' + expense.id" [attr.aria-label]="'Monto de ' + expense.name" [ngModel]="expense.amount" (ngModelChange)="budget.updateExpenseAmount(expense.id, $event)">
+                @if (expense.custom) {
+                  <button class="ghost-button budget-entry-remove" type="button" [attr.aria-label]="'Quitar ' + expense.name" (click)="budget.removeExpense(expense.id)">
+                    <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+                    <span>QUITAR</span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          @if (addingExpense()) {
+            <form class="add-expense-form" (ngSubmit)="addExpense()">
+              <label>
+                <span class="label">NUEVA CATEGORÍA</span>
+                <input type="text" name="newExpenseName" autocomplete="off" [ngModel]="expenseName()" (ngModelChange)="expenseName.set($event)">
+              </label>
+              <label>
+                <span class="label">MONEDA</span>
+                <select name="newExpenseCurrency" [ngModel]="expenseCurrency()" (ngModelChange)="setExpenseCurrency($event)">
+                  <option value="DOP">DOP</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+              <label>
+                <span class="label">MONTO</span>
+                <input type="number" inputmode="decimal" min="0" step="0.01" name="newExpenseAmount" [ngModel]="expenseAmount()" (ngModelChange)="expenseAmount.set($event)">
+              </label>
+              <button class="secondary-button" type="submit" [disabled]="!canAddExpense()">
+                <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
+                <span>GUARDAR</span>
+              </button>
+              <button class="ghost-button" type="button" (click)="cancelExpense()">
+                <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+                <span>CANCELAR</span>
+              </button>
+            </form>
+          } @else {
+            <button class="secondary-button" type="button" (click)="showExpenseForm()">
+              <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
+              <span>AÑADIR CATEGORÍA</span>
+            </button>
+          }
+        </section>
+
+        <section class="budget-ledger" aria-labelledby="income-title">
+          <div class="budget-ledger-title">
+            <span class="label label-with-icon">
+              <span class="dot-icon dot-icon-income" aria-hidden="true"></span>
+              <span>INGRESOS</span>
+            </span>
+            <strong id="income-title">Entradas</strong>
+          </div>
+
+          <div class="budget-entry-list">
+            @for (income of budget.incomes(); track income.id) {
+              <div class="budget-entry-row">
+                <span class="budget-entry-name">{{ income.name }}</span>
+                <select [name]="'income-currency-' + income.id" [attr.aria-label]="'Moneda de ' + income.name" [ngModel]="income.currency" (ngModelChange)="budget.updateIncomeCurrency(income.id, $event)">
+                  <option value="DOP">DOP</option>
+                  <option value="USD">USD</option>
+                </select>
+                <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'income-amount-' + income.id" [attr.aria-label]="'Monto de ' + income.name" [ngModel]="income.amount" (ngModelChange)="budget.updateIncomeAmount(income.id, $event)">
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+</section>

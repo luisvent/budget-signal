@@ -1,0 +1,96 @@
+.budget-cycle-spotlight {
+	display: grid;
+	gap: 8px;
+	min-width: 0;
+	border: 1px solid currentColor;
+	border-left-width: 5px;
+	border-radius: 8px;
+	background: var(--surface);
+	padding: 16px;
+	color: var(--success);
+}
+
+.budget-cycle-spotlight[data-tone='warning'] {
+	color: var(--warning);
+}
+
+.budget-cycle-spotlight[data-tone='danger'] {
+	color: var(--accent);
+}
+
+.budget-cycle-spotlight strong {
+	color: var(--text-display);
+	font-family: 'Space Mono', monospace;
+	font-size: 42px;
+	line-height: 1;
+	overflow-wrap: anywhere;
+}
+
+.budget-cycle-spotlight small {
+	color: var(--text-secondary);
+	font-size: 13px;
+}
+
+.budget-entry-identity {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	flex-wrap: wrap;
+}
+
+.budget-entry-identity .budget-entry-name {
+	flex: 1 1 96px;
+}
+
+.budget-entry-name[data-expense-level='1'] {
+	color: #9a9a9a;
+}
+
+.budget-entry-name[data-expense-level='2'] {
+	color: var(--interactive);
+}
+
+.budget-entry-name[data-expense-level='3'] {
+	color: var(--success);
+}
+
+.budget-entry-name[data-expense-level='4'] {
+	color: var(--warning);
+}
+
+.budget-entry-name[data-expense-level='5'] {
+	color: var(--accent);
+}
+
+.budget-category-image {
+	position: relative;
+	width: 58px;
+	aspect-ratio: 16 / 10;
+	margin: 0;
+	overflow: hidden;
+	border: 1px solid var(--border-visible);
+	border-radius: 6px;
+	background: var(--surface);
+}
+
+.budget-category-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.budget-category-image span {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	border: 1px solid var(--text-display);
+	border-radius: 4px;
+	background: var(--black);
+	padding: 1px 3px;
+	color: var(--text-display);
+	font-family: 'Space Mono', monospace;
+	font-size: 8px;
+	line-height: 1;
+}

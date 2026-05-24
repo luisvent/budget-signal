@@ -1,0 +1,12 @@
+<section class="signal-grid" aria-label="Señales de gasto">
+  @for (insight of store.insights(); track insight.label) {
+    <article class="signal-card" [ngClass]="insight.tone">
+      <p class="label label-with-icon">
+        <span class="dot-icon dot-icon-signal" aria-hidden="true"></span>
+        <span>{{ insight.label }}</span>
+      </p>
+      <strong>{{ insight.value }}</strong>
+      <span>{{ insight.detail }}</span>
+    </article>
+  }
+</section>

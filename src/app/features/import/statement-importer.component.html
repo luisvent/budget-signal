@@ -1,0 +1,97 @@
+<section class="import-panel" id="import" aria-labelledby="import-title">
+  <div class="section-heading">
+    <div>
+      <p class="label label-with-icon">
+        <span class="dot-icon dot-icon-import" aria-hidden="true"></span>
+        <span>CARGA DE ESTADOS</span>
+      </p>
+      <h2 id="import-title">Lector de banco, CSV y tarjeta</h2>
+    </div>
+    <span class="system-status">{{ store.importStatus() }}</span>
+  </div>
+
+  <div class="statement-grid">
+    <label class="statement-editor">
+      <span class="label label-with-icon">
+        <span class="dot-icon dot-icon-document" aria-hidden="true"></span>
+        <span>PEGA ESTADO CSV O TXT</span>
+      </span>
+      <textarea name="statementDraft" [ngModel]="store.statementDraft()" (ngModelChange)="store.statementDraft.set($event)" spellcheck="false"></textarea>
+    </label>
+
+    <div class="import-console">
+      <p class="label label-with-icon">
+        <span class="dot-icon dot-icon-actions" aria-hidden="true"></span>
+        <span>ACCIONES</span>
+      </p>
+      <label class="secondary-button" for="statement-file">
+        <span class="dot-icon dot-icon-upload" aria-hidden="true"></span>
+        <span>SUBIR ESTADOS</span>
+      </label>
+      <input class="file-input" id="statement-file" type="file" multiple accept=".csv,.txt,text/csv,text/plain" (change)="handleFileImport($event)">
+      <button class="primary-button" type="button" (click)="store.importStatementText()">
+        <span class="dot-icon dot-icon-analyze" aria-hidden="true"></span>
+        <span>ANALIZAR</span>
+      </button>
+      <button class="secondary-button" type="button" (click)="store.loadSampleData()">
+        <span class="dot-icon dot-icon-sample" aria-hidden="true"></span>
+        <span>EJEMPLO</span>
+      </button>
+      <button class="ghost-button" type="button" (click)="store.clearTransactions()">
+        <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+        <span>LIMPIAR</span>
+      </button>
+
+      <div class="import-metrics" aria-label="Resumen de importación">
+        <div>
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-files" aria-hidden="true"></span>
+            <span>ARCHIVOS</span>
+          </span>
+          <strong>{{ store.importSummary().files }}</strong>
+        </div>
+        <div>
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-rows" aria-hidden="true"></span>
+            <span>FILAS</span>
+          </span>
+          <strong>{{ store.importSummary().rows }}</strong>
+        </div>
+        <div>
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-payments" aria-hidden="true"></span>
+            <span>PAGOS</span>
+          </span>
+          <strong>{{ store.importSummary().payments }}</strong>
+        </div>
+        <div>
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-duplicates" aria-hidden="true"></span>
+            <span>DUPLICADOS</span>
+          </span>
+          <strong>{{ store.importSummary().duplicates }}</strong>
+        </div>
+      </div>
+
+      <div class="format-readout">
+        <span class="label label-with-icon">
+          <span class="dot-icon dot-icon-format" aria-hidden="true"></span>
+          <span>FORMATO</span>
+        </span>
+        <strong>{{ store.importSummary().formats.join(' / ') || 'NINGUNO' }}</strong>
+      </div>
+
+      @if (store.uploadedStatementNames().length > 0) {
+        <div class="file-list">
+          <span class="label label-with-icon">
+            <span class="dot-icon dot-icon-files" aria-hidden="true"></span>
+            <span>ARCHIVOS CARGADOS</span>
+          </span>
+          @for (statementName of store.uploadedStatementNames(); track statementName) {
+            <small>{{ statementName }}</small>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</section>
