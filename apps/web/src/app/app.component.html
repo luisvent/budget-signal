@@ -70,13 +70,13 @@
 
   <section class="manual-view" aria-live="polite">
     @if (activeView() === 'budget') {
-      <app-personal-budget />
+      <app-personal-budget class="view-enter" />
     } @else if (activeView() === 'payment') {
-      <app-conversion-budget />
+      <app-conversion-budget class="view-enter" />
     } @else if (activeView() === 'wealth') {
-      <app-wealth-position />
+      <app-wealth-position class="view-enter" />
     } @else {
-      <div class="statement-analysis-view">
+      <div class="statement-analysis-view view-enter">
         <app-statement-importer />
         <app-dashboard-summary />
         <app-dashboard-charts />

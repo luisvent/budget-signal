@@ -30,6 +30,7 @@ body {
 	min-height: 100%;
 	margin: 0;
 	overflow-x: hidden;
+	overscroll-behavior-y: contain;
 	background: var(--black);
 	color: var(--text-primary);
 	font-family: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
@@ -38,9 +39,49 @@ body {
 	-webkit-text-size-adjust: 100%;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+
+button,
+[role='button'] {
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 }
 
 ::selection {
 	background: var(--accent);
 	color: var(--text-display);
+}
+
+/* Compact, monochrome scrollbars to match the Nothing instrument aesthetic. */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--border-visible);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.view-enter {
+		animation: viewFadeIn 220ms ease-out both;
+	}
+}
+
+@keyframes viewFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
 }

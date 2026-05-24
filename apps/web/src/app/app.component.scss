@@ -1702,17 +1702,58 @@ th:last-child {
 
 	.budget-entry-row,
 	.budget-entry-row:not(.removable) {
-		grid-template-columns: 1fr 92px minmax(0, 1fr);
+		grid-template-columns: auto minmax(0, 1fr);
+		grid-template-areas:
+			'identity identity'
+			'currency amount';
+		column-gap: 10px;
+		row-gap: 8px;
+		align-items: center;
+		padding-top: 12px;
 	}
 
-	.budget-entry-identity,
-	.budget-entry-name {
-		grid-column: 1 / -1;
+	.budget-entry-identity {
+		grid-area: identity;
+		flex-wrap: nowrap;
+		gap: 10px;
+	}
+
+	.budget-entry-identity .budget-entry-name {
+		flex: 1 1 auto;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.budget-category-image {
+		width: 44px;
+	}
+
+	.budget-entry-row > select {
+		grid-area: currency;
+		width: auto;
+		min-width: 88px;
+		min-height: 40px;
+		padding: 0 28px 0 12px;
+		font-size: 12px;
+		background-position: calc(100% - 14px) 17px, calc(100% - 9px) 17px;
+	}
+
+	.budget-entry-row > input[type='number'] {
+		grid-area: amount;
+		min-height: 40px;
+		text-align: right;
+		font-family: 'Space Mono', monospace;
+		font-size: 16px;
+		letter-spacing: 0;
 	}
 
 	.budget-entry-remove {
 		grid-column: 1 / -1;
-		justify-self: start;
+		justify-self: end;
+		min-height: 36px;
+		font-size: 10px;
+		opacity: 0.7;
 	}
 
 	.conversion-after-addition,
@@ -1757,3 +1798,269 @@ th:last-child {
 		font-size: 11px;
 	}
 }
+
+/* =====================================================================
+ * Mobile-first polish (Nothing-inspired refinements)
+ * - Tap-pressed micro-interaction
+ * - Doto for the single hero number per surface
+ * - Sticky compact top header
+ * - Floating bottom nav: tighter, dot-icon-led active state
+ * - Status badges with tinted backgrounds for readable color contrast
+ * - Lighter card-in-card nesting on mobile
+ * =================================================================== */
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.manual-summary-card,
+.desktop-nav button,
+.mobile-nav button,
+.category-column,
+.merchant-action {
+	transition: transform 140ms ease-out, border-color 140ms ease-out, background-color 140ms ease-out, color 140ms ease-out;
+}
+
+.primary-button:active:not(:disabled),
+.secondary-button:active:not(:disabled),
+.ghost-button:active:not(:disabled),
+.manual-summary-card:active,
+.desktop-nav button:active,
+.mobile-nav button:active,
+.category-column:active,
+.merchant-action:active {
+	transform: scale(0.97);
+}
+
+.mobile-nav button:active {
+	transform: scale(0.92);
+}
+
+/* Hero number — use Doto only for short hero strings (countdowns, single tokens). */
+.budget-cycle-spotlight strong {
+	font-family: 'Doto', 'Space Mono', monospace;
+	font-weight: 700;
+	letter-spacing: 0;
+}
+
+/* Status pill — slight tonal background for better legibility while remaining flat. */
+.manual-summary-status {
+	background: color-mix(in srgb, currentColor 12%, transparent);
+	border-color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+/* Manual summary card: subtle hover lift via border only (no shadow per anti-pattern). */
+.manual-summary-card {
+	position: relative;
+}
+
+.manual-summary-card.active::after {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--accent);
+	content: '';
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+/* Sticky compact topbar (mobile only — wordmark stays anchored as user scrolls). */
+@media (max-width: 960px) {
+	.topbar {
+		position: sticky;
+		top: 0;
+		z-index: 15;
+		margin: calc(-18px - env(safe-area-inset-top)) calc(-16px - env(safe-area-inset-right)) 0 calc(-16px - env(safe-area-inset-left));
+		padding: calc(12px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 12px calc(16px + env(safe-area-inset-left));
+		background: color-mix(in srgb, var(--black) 92%, transparent);
+		backdrop-filter: saturate(140%) blur(8px);
+		-webkit-backdrop-filter: saturate(140%) blur(8px);
+		border-bottom: 1px solid var(--border);
+	}
+
+	/* On mobile we let cards float on the canvas — fewer borders, less nesting. */
+	.manual-dashboard-panel {
+		border: 0;
+		background: transparent;
+		padding: 16px 0 0;
+	}
+
+	.section-heading h2 {
+		font-size: 20px;
+	}
+
+	/* Compact dashboard — the active surface's card collapses to a thin chip.       */
+	.manual-summary-card {
+		min-height: 0;
+		padding: 16px;
+	}
+
+	.manual-summary-card.active {
+		border-color: var(--text-display);
+		background: var(--surface-raised);
+	}
+
+	/* Bottom nav: solid surface, lighter shadow, icon stack + label. */
+	.mobile-nav {
+		bottom: calc(12px + env(safe-area-inset-bottom));
+		background: color-mix(in srgb, var(--surface) 96%, transparent);
+		backdrop-filter: saturate(140%) blur(10px);
+		-webkit-backdrop-filter: saturate(140%) blur(10px);
+		border-color: var(--border-visible);
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32);
+	}
+
+	.mobile-nav button {
+		gap: 4px;
+		font-size: 10px;
+		letter-spacing: 0.04em;
+	}
+
+	.mobile-nav button .dot-icon {
+		flex: 0 0 16px;
+		width: 16px;
+		height: 16px;
+		opacity: 0.7;
+	}
+
+	.mobile-nav button.active-view .dot-icon {
+		opacity: 1;
+	}
+
+	.mobile-nav button:not(.active-view):hover {
+		background: color-mix(in srgb, var(--text-display) 6%, transparent);
+	}
+}
+
+@media (max-width: 620px) {
+	.app-shell {
+		--mobile-nav-clearance: 120px;
+	}
+
+	/* Tighten card chrome — pure data, less furniture. */
+	.manual-dashboard {
+		padding: 8px 0 4px;
+	}
+
+	.personal-budget,
+	.conversion-budget,
+	.wealth-position {
+		padding: 12px 0 4px;
+	}
+
+	.manual-summary-card strong {
+		font-size: clamp(32px, 10.5vw, 42px);
+		letter-spacing: -0.02em;
+	}
+
+	/* Compact dashboard cards (when not active) — two small KPI tiles in a row.    */
+	.manual-summary-grid {
+		grid-template-columns: 1fr;
+		gap: 10px;
+	}
+
+	.manual-summary-card small {
+		display: -webkit-box;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.manual-summary-card:not(.active) {
+		grid-template-columns: 1fr auto;
+		grid-template-areas:
+			'label value'
+			'status status'
+			'msg msg';
+		gap: 8px;
+	}
+
+	.manual-summary-card:not(.active) .label {
+		grid-area: label;
+		align-self: center;
+	}
+
+	.manual-summary-card:not(.active) strong {
+		grid-area: value;
+		justify-self: end;
+		font-size: clamp(22px, 6.5vw, 28px);
+		letter-spacing: 0;
+	}
+
+	.manual-summary-card:not(.active) .manual-summary-status {
+		grid-area: status;
+	}
+
+	.manual-summary-card:not(.active) small {
+		grid-area: msg;
+		-webkit-line-clamp: 2;
+	}
+
+	.manual-summary-card:not(.active) app-budget-pressure-bar {
+		display: none;
+	}
+
+	/* Bottom nav — slightly larger tap targets. */
+	.mobile-nav {
+		bottom: calc(8px + env(safe-area-inset-bottom));
+		gap: 2px;
+		padding: 5px;
+	}
+
+	.mobile-nav button {
+		min-height: 46px;
+		padding: 0 6px;
+	}
+
+	/* Inputs feel more like instruments on small screens. */
+	input,
+	select {
+		min-height: 46px;
+		font-size: 15px;
+	}
+
+	textarea {
+		font-size: 14px;
+	}
+
+	/* Section heading: stack the label/title and right-action — already does, just tightening. */
+	.section-heading h2 {
+		font-size: 22px;
+		letter-spacing: -0.01em;
+	}
+
+	/* Secondary buttons on mobile: slightly taller for thumb reach. */
+	.secondary-button,
+	.primary-button {
+		min-height: 46px;
+	}
+
+	.secondary-button.dashboard-email-button {
+		min-height: 40px;
+		padding-inline: 14px;
+		font-size: 11px;
+	}
+}
+
+/* Larger phones / small tablets — two-up dashboard cards. */
+@media (min-width: 560px) and (max-width: 960px) {
+	.manual-summary-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+/* Respect reduced motion — drop micro-press transforms. */
+@media (prefers-reduced-motion: reduce) {
+	.primary-button:active:not(:disabled),
+	.secondary-button:active:not(:disabled),
+	.ghost-button:active:not(:disabled),
+	.manual-summary-card:active,
+	.desktop-nav button:active,
+	.mobile-nav button:active,
+	.category-column:active,
+	.merchant-action:active {
+		transform: none;
+	}
+}
+
