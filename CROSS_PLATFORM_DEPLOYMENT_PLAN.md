@@ -197,7 +197,7 @@ Target behavior:
 
 ```text
 web production: fetch('/api/state')
-iOS Capacitor: fetch('https://budget.example.com/api/state')
+iOS Capacitor: fetch('https://api.budget.example.com/api/state')
 ```
 
 Recommended implementation:
@@ -226,6 +226,14 @@ export const environment = {
 
 The iOS URL should not include `/api`; callers already pass `/api/...`.
 
+Current implementation:
+
+- Web environment files live under `apps/web/src/environments/`.
+- Web builds keep `apiBaseUrl` empty for same-origin `/api` requests.
+- The `ios` Angular build configuration replaces the normal environment with `environment.ios.ts`.
+- `environment.ios.ts` contains a placeholder API origin that must be changed to the deployed HTTPS API domain before a Capacitor build.
+- `ApiClientService` centralizes URL resolution for all API calls.
+
 ### Phase 3: Add PWA Support
 
 Add Angular PWA support and a minimal manifest.
@@ -244,6 +252,13 @@ Then verify:
 - The service worker does not cache API responses in a way that makes financial data stale.
 - Navigating to the deployed HTTPS URL works from iPhone Safari.
 - Add to Home Screen launches in standalone mode.
+
+Current implementation:
+
+- `apps/web/public/manifest.webmanifest` defines the installable web app metadata.
+- `apps/web/ngsw-config.json` caches static app assets and intentionally leaves API responses uncached.
+- `apps/web/src/app/app.config.ts` registers Angular's service worker only for production builds.
+- `apps/web/src/index.html` includes manifest, theme color, and iOS standalone metadata.
 
 Recommended PWA stance:
 
@@ -426,7 +441,7 @@ The PWA install path gives the fastest working iPhone experience with almost no 
 
 ## Definition Of Done
 
-- Web/API still deploys as one Docker service.
+- Web/API still deploy as independent Docker services.
 - `/api/health` works through the deployed HTTPS domain.
 - The web app still uses same-origin `/api` paths.
 - iPhone can install the app as a PWA from Safari.

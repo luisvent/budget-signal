@@ -1,7 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
+import { AccessCodeService } from './access-code.service';
 
 @Injectable({ providedIn: 'root' })
 export class ApiClientService {
+  private readonly accessCode = inject(AccessCodeService);
+
   async get<T>(path: string): Promise<T> {
     return this.request<T>(path);
   }
@@ -25,10 +29,11 @@ export class ApiClientService {
   }
 
   private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const response = await fetch(path, {
+    const response = await fetch(this.resolveUrl(path), {
       ...init,
       headers: {
         'Content-Type': 'application/json',
+        ...this.accessHeaders(),
         ...init.headers
       }
     });
@@ -43,5 +48,16 @@ export class ApiClientService {
     }
 
     return await response.json() as T;
+  }
+
+  private resolveUrl(path: string): string {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    const apiBaseUrl = environment.apiBaseUrl.replace(/\/$/, '');
+    return `${apiBaseUrl}${normalizedPath}`;
+  }
+
+  private accessHeaders(): Record<string, string> {
+    const code = this.accessCode.currentCode();
+    return code ? { 'X-Budget-Signal-Code': code } : {};
   }
 }

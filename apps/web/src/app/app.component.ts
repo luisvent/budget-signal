@@ -1,4 +1,5 @@
-import { Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
+import { Component, Injector, ViewEncapsulation, computed, inject, signal } from '@angular/core';
+import { AccessCodeService, normalizeAccessCode } from './core/services/access-code.service';
 import { BudgetStoreService } from './core/services/budget-store.service';
 import { ConversionBudgetService } from './core/services/conversion-budget.service';
 import { PersonalBudgetService } from './core/services/personal-budget.service';
@@ -46,13 +47,55 @@ const budgetSignalColors: Record<BudgetSignalLevel, string> = {
   encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
-  readonly store = inject(BudgetStoreService);
-  readonly personalBudget = inject(PersonalBudgetService);
-  readonly paymentBalance = inject(ConversionBudgetService);
-  readonly wealth = inject(WealthPositionService);
+  private readonly injector = inject(Injector);
+  private readonly accessCode = inject(AccessCodeService);
+  private storeService?: BudgetStoreService;
+  private personalBudgetService?: PersonalBudgetService;
+  private paymentBalanceService?: ConversionBudgetService;
+  private wealthService?: WealthPositionService;
+
+  readonly isUnlocked = this.accessCode.isUnlocked;
+  readonly enteredAccessCode = signal('');
+  readonly accessStatus = signal('');
   readonly activeView = signal<AppView>('budget');
   readonly budgetSignalLevel = computed(() => this.levelFromRemaining(this.personalBudget.netTotals()[0]?.amount ?? 0));
   readonly budgetSignalColor = computed(() => budgetSignalColors[this.budgetSignalLevel()]);
+
+  get store(): BudgetStoreService {
+    return this.storeService ??= this.injector.get(BudgetStoreService);
+  }
+
+  get personalBudget(): PersonalBudgetService {
+    return this.personalBudgetService ??= this.injector.get(PersonalBudgetService);
+  }
+
+  get paymentBalance(): ConversionBudgetService {
+    return this.paymentBalanceService ??= this.injector.get(ConversionBudgetService);
+  }
+
+  get wealth(): WealthPositionService {
+    return this.wealthService ??= this.injector.get(WealthPositionService);
+  }
+
+  updateAccessCode(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const normalizedCode = normalizeAccessCode(input.value);
+    input.value = normalizedCode;
+    this.enteredAccessCode.set(normalizedCode);
+    this.accessStatus.set('');
+  }
+
+  submitAccessCode(event: Event): void {
+    event.preventDefault();
+
+    if (this.accessCode.unlock(this.enteredAccessCode())) {
+      this.enteredAccessCode.set('');
+      this.accessStatus.set('');
+      return;
+    }
+
+    this.accessStatus.set('CÓDIGO INCORRECTO');
+  }
 
   showView(view: AppView): void {
     this.activeView.set(view);

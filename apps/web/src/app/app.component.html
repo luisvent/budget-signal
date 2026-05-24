@@ -1,3 +1,4 @@
+@if (isUnlocked()) {
 <main class="app-shell" [class.light-mode]="store.theme() === 'light'">
   <header class="topbar">
     <button class="wordmark" type="button" (click)="showView('budget')" aria-label="Panel de Señal de Presupuesto">
@@ -115,3 +116,39 @@
     </button>
   </nav>
 </main>
+} @else {
+<main class="access-lock-shell" aria-labelledby="access-lock-title">
+  <form class="access-lock-panel" (submit)="submitAccessCode($event)">
+    <span class="access-lock-mark" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+    <p class="label label-with-icon">
+      <span class="dot-icon dot-icon-signal" aria-hidden="true"></span>
+      <span>ACCESO PROTEGIDO</span>
+    </p>
+    <h1 id="access-lock-title">Código de acceso</h1>
+    <label class="access-code-field">
+      <span>Código de 4 números</span>
+      <input
+        class="access-code-input"
+        type="password"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="4"
+        autocomplete="off"
+        aria-describedby="access-code-status"
+        [value]="enteredAccessCode()"
+        (input)="updateAccessCode($event)"
+        autofocus
+      >
+    </label>
+    <button class="primary-button access-unlock-button" type="submit" [disabled]="enteredAccessCode().length !== 4">
+      <span class="dot-icon dot-icon-load" aria-hidden="true"></span>
+      <span>ENTRAR</span>
+    </button>
+    <p id="access-code-status" class="access-lock-status" aria-live="polite">{{ accessStatus() }}</p>
+  </form>
+</main>
+}

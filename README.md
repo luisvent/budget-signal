@@ -78,9 +78,12 @@ BUDGET_SUMMARY_EMAIL_TO=email1@example.com,email2@example.com
 BUDGET_SUMMARY_EMAIL_FROM=VD Presupuesto <budget@yourdomain.com>
 BUDGET_SUMMARY_EMAIL_SUBJECT_PREFIX=VD Presupuesto
 CORS_ORIGIN=https://budget.yourdomain.com
+BUDGET_SIGNAL_ACCESS_CODE=0607
 ```
 
 For a direct IP deployment without a domain, `CORS_ORIGIN=*` is fine. For production with separate web and API domains, set it to the exact web app URL, for example `https://budget.yourdomain.com`.
+
+The app starts locked on every page load or refresh. The fixed four-number access code is `0607`; the API also requires that code through the web app's request header for every endpoint except `/api/health`. If you later change `BUDGET_SIGNAL_ACCESS_CODE`, update the web access-code service to match before rebuilding.
 
 After the stack starts, open:
 
@@ -114,6 +117,27 @@ docker push your-registry/budget-signal-web:latest
 ```
 
 For a domain, point the web reverse proxy to `4210`. If you want a public API domain for other clients, point that API reverse proxy to `8734`. The API health check is available at `/api/health` on both surfaces.
+
+## Cross-Platform Web And PWA
+
+The Angular app uses `apps/web/src/environments/environment.ts` for the web build. Its `apiBaseUrl` is empty, so browser and PWA installs keep calling same-origin `/api/...` through the web container proxy.
+
+The iOS-oriented web build uses `apps/web/src/environments/environment.ios.ts`. Before building a Capacitor shell later, replace the placeholder `https://api.budget.example.com` with your deployed HTTPS API origin. Do not include `/api` in that value.
+
+Build commands:
+
+```bash
+npm run build
+npm run build:ios
+```
+
+The production web build includes a PWA manifest and Angular service worker. The service worker caches app shell/static assets only; API responses are not cached, so backend data remains the source of truth.
+
+To install on iPhone as a PWA:
+
+1. Open your HTTPS web URL in Safari.
+2. Use Share -> Add to Home Screen.
+3. Launch Budget Signal from the home screen icon.
 
 ## Structure
 

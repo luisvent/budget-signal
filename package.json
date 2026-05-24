@@ -7,6 +7,7 @@
     "start:spa": "ng serve --proxy-config apps/web/proxy.conf.json",
     "start:api": "node apps/api/src/index.mjs",
     "build": "ng build",
+    "build:ios": "ng build --configuration ios",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:server": "node --test apps/api/src/*.test.mjs apps/api/src/email/*.test.mjs apps/api/src/persistence/*.test.mjs",
@@ -25,6 +26,7 @@
     "@angular/platform-browser": "^21.2.11",
     "@angular/platform-browser-dynamic": "^21.2.11",
     "@angular/router": "^21.2.11",
+    "@angular/service-worker": "21.2.11",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.1"

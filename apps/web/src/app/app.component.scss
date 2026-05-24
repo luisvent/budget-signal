@@ -3,11 +3,113 @@
 	min-height: 100vh;
 }
 
+.access-lock-shell {
+	display: grid;
+	min-height: 100vh;
+	place-items: center;
+	padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+	background: var(--black);
+	color: var(--text-primary);
+}
+
+.access-lock-panel {
+	display: grid;
+	width: min(420px, 100%);
+	gap: 18px;
+	border: 1px solid var(--border-visible);
+	border-radius: 8px;
+	background: var(--surface);
+	padding: 28px;
+	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+}
+
+.access-lock-mark {
+	display: grid;
+	width: 56px;
+	height: 56px;
+	grid-template-columns: repeat(3, 1fr);
+	align-items: end;
+	gap: 6px;
+	border: 1px solid var(--border-visible);
+	background: var(--black);
+	padding: 10px;
+}
+
+.access-lock-mark span {
+	display: block;
+	background: var(--accent);
+}
+
+.access-lock-mark span:nth-child(1) {
+	height: 34%;
+}
+
+.access-lock-mark span:nth-child(2) {
+	height: 58%;
+}
+
+.access-lock-mark span:nth-child(3) {
+	height: 84%;
+}
+
+.access-lock-panel h1 {
+	margin: 0;
+	color: var(--text-display);
+	font-family: 'Space Grotesk', system-ui, sans-serif;
+	font-size: 32px;
+	font-weight: 700;
+	letter-spacing: 0;
+	line-height: 1;
+}
+
+.access-code-field {
+	display: grid;
+	gap: 8px;
+	color: var(--text-secondary);
+	font-family: 'Space Mono', monospace;
+	font-size: 12px;
+	letter-spacing: 0;
+	text-transform: uppercase;
+}
+
+.access-code-input {
+	width: 100%;
+	border: 1px solid var(--border-visible);
+	border-radius: 8px;
+	background: var(--black);
+	color: var(--text-display);
+	padding: 14px 16px;
+	font-family: 'Space Mono', monospace;
+	font-size: 28px;
+	letter-spacing: 0.42em;
+	text-align: center;
+}
+
+.access-code-input:focus-visible {
+	border-color: var(--accent);
+	outline: 2px solid var(--accent-subtle);
+	outline-offset: 2px;
+}
+
+.access-unlock-button {
+	min-height: 48px;
+}
+
+.access-lock-status {
+	min-height: 18px;
+	margin: 0;
+	color: var(--accent);
+	font-family: 'Space Mono', monospace;
+	font-size: 12px;
+	letter-spacing: 0;
+	text-transform: uppercase;
+}
+
 .app-shell {
 	width: 100%;
 	overflow-x: hidden;
 	min-height: 100vh;
-	padding: 24px 24px 112px;
+	padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(112px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
 	background: var(--black);
 	color: var(--text-primary);
 }
@@ -1354,13 +1456,13 @@ th:last-child {
 .mobile-nav {
 	position: fixed;
 	right: auto;
-	bottom: 16px;
+	bottom: calc(16px + env(safe-area-inset-bottom));
 	left: 50%;
 	transform: translateX(-50%);
 	z-index: 20;
 	display: none;
-	width: min(460px, calc(100vw - 32px));
-	max-width: calc(100vw - 32px);
+	width: min(460px, calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+	max-width: calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right));
 	overflow: hidden;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	gap: 4px;
@@ -1386,7 +1488,7 @@ th:last-child {
 
 @media (max-width: 960px) {
 	.app-shell {
-		padding: 20px 16px 104px;
+		padding: calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(104px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
 	}
 
 	.topbar {

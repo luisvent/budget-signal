@@ -22,6 +22,7 @@ import {
 const port = Number(process.env.PORT ?? 3000);
 const host = process.env.HOST ?? '127.0.0.1';
 const allowedOrigin = process.env.CORS_ORIGIN ?? '*';
+const requiredAccessCode = process.env.BUDGET_SIGNAL_ACCESS_CODE ?? '0607';
 const maxBodyBytes = Number(process.env.MAX_BODY_BYTES ?? 15 * 1024 * 1024);
 
 const server = createServer(async (request, response) => {
@@ -36,6 +37,11 @@ const server = createServer(async (request, response) => {
   try {
     const url = new URL(request.url ?? '/', `http://${request.headers.host ?? 'localhost'}`);
     const routeKey = `${request.method ?? 'GET'} ${url.pathname}`;
+
+    if (isProtectedApiPath(url.pathname) && !isAccessAuthorized(request)) {
+      sendJson(response, 401, { error: 'Access code required' });
+      return;
+    }
 
     switch (routeKey) {
       case 'GET /api/health':
@@ -113,7 +119,15 @@ server.listen(port, host, () => {
 function setCorsHeaders(response) {
   response.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Budget-Signal-Code');
+}
+
+function isProtectedApiPath(pathname) {
+  return pathname.startsWith('/api/') && pathname !== '/api/health';
+}
+
+function isAccessAuthorized(request) {
+  return request.headers['x-budget-signal-code'] === requiredAccessCode;
 }
 
 function sendJson(response, status, payload) {

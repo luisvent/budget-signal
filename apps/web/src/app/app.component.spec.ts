@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppState, Budget, emptyBalancePaymentSummary, emptyPresupuestoSummary, emptyWealthSummary } from './core/models/budget.models';
 import { ApiClientService } from './core/services/api-client.service';
 import { AppComponent } from './app.component';
@@ -72,6 +72,14 @@ class ApiClientStub {
   }
 }
 
+function createUnlockedFixture(): ComponentFixture<AppComponent> {
+  const fixture = TestBed.createComponent(AppComponent);
+  fixture.componentInstance.enteredAccessCode.set('0607');
+  fixture.componentInstance.submitAccessCode(new Event('submit'));
+  fixture.detectChanges();
+  return fixture;
+}
+
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -81,19 +89,40 @@ describe('AppComponent', () => {
   });
 
   it('should create the app shell', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render the dashboard brand', () => {
+  it('should require the access code before rendering the dashboard', () => {
     const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('.access-lock-panel')).not.toBeNull();
+    expect(compiled.querySelector('.wordmark')).toBeNull();
+  });
+
+  it('should reject an incorrect access code', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.componentInstance.enteredAccessCode.set('1234');
+    fixture.componentInstance.submitAccessCode(new Event('submit'));
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(fixture.componentInstance.isUnlocked()).toBeFalse();
+    expect(compiled.querySelector('.access-lock-status')?.textContent).toContain('CÓDIGO INCORRECTO');
+    expect(compiled.querySelector('.wordmark')).toBeNull();
+  });
+
+  it('should render the dashboard brand', () => {
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.wordmark')?.textContent).toContain('SEÑAL DE PRESUPUESTO');
   });
 
   it('should not render the light and dark mode toggle', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
@@ -101,7 +130,7 @@ describe('AppComponent', () => {
   });
 
   it('should color the budget signal dot from the remaining budget level', async () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -111,7 +140,7 @@ describe('AppComponent', () => {
   });
 
   it('should mark the budget signal dot as best level at RD$120,000 remaining', async () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.componentInstance.personalBudget.incomes.set([
@@ -125,7 +154,7 @@ describe('AppComponent', () => {
   });
 
   it('should step the budget signal dot down below RD$120,000 remaining', async () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.componentInstance.personalBudget.incomes.set([
@@ -139,7 +168,7 @@ describe('AppComponent', () => {
   });
 
   it('should render the manual summary dashboard cards', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const summary = compiled.querySelector('.manual-dashboard') as HTMLElement;
@@ -154,7 +183,7 @@ describe('AppComponent', () => {
   });
 
   it('should request a budget summary email from the dashboard action', async () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     const api = TestBed.inject(ApiClientService) as unknown as ApiClientStub;
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
@@ -173,7 +202,7 @@ describe('AppComponent', () => {
   });
 
   it('should show the presupuesto view by default', async () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -192,7 +221,7 @@ describe('AppComponent', () => {
   });
 
   it('should color-code non-fixed expense names by converted DOP amount level', async () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -207,7 +236,7 @@ describe('AppComponent', () => {
   });
 
   it('should switch to the Balance de Pago view from navigation', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const paymentButton = Array.from(compiled.querySelectorAll<HTMLButtonElement>('.desktop-nav button'))
@@ -227,7 +256,7 @@ describe('AppComponent', () => {
   });
 
   it('should switch back to the presupuesto view from navigation', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const navButtons = Array.from(compiled.querySelectorAll<HTMLButtonElement>('.desktop-nav button'));
@@ -241,7 +270,7 @@ describe('AppComponent', () => {
   });
 
   it('should render the mobile navigation tabs', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const mobileTabs = Array.from(compiled.querySelectorAll<HTMLButtonElement>('.mobile-nav button'))
@@ -251,7 +280,7 @@ describe('AppComponent', () => {
   });
 
   it('should switch to the statement import view from navigation', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const importButton = Array.from(compiled.querySelectorAll<HTMLButtonElement>('.desktop-nav button'))
@@ -275,7 +304,7 @@ describe('AppComponent', () => {
   });
 
   it('should keep statement analysis sections out of the default budget view', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    const fixture = createUnlockedFixture();
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 

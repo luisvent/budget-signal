@@ -54,13 +54,42 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "24kB",
+                  "maximumWarning": "28kB",
                   "maximumError": "40kB"
                 }
               ],
+              "serviceWorker": "apps/web/ngsw-config.json",
+              "outputHashing": "all"
+            },
+            "ios": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "28kB",
+                  "maximumError": "40kB"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/src/environments/environment.ts",
+                  "with": "apps/web/src/environments/environment.ios.ts"
+                }
+              ],
+              "serviceWorker": "apps/web/ngsw-config.json",
               "outputHashing": "all"
             },
             "development": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/src/environments/environment.ts",
+                  "with": "apps/web/src/environments/environment.development.ts"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -76,6 +105,9 @@
             },
             "development": {
               "buildTarget": "budget-signal:build:development"
+            },
+            "ios": {
+              "buildTarget": "budget-signal:build:ios"
             }
           },
           "defaultConfiguration": "development"
