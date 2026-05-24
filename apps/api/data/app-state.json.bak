@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-05-24T06:11:14.332Z",
+  "updatedAt": "2026-05-24T06:19:56.602Z",
   "data": {
     "theme": "dark",
     "budgets": [
@@ -82,7 +82,7 @@
         {
           "id": "expense-tarjeta-luis-us",
           "name": "Tarjeta Luis US",
-          "amount": 9,
+          "amount": 0,
           "currency": "USD"
         },
         {

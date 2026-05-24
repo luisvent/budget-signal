@@ -93,11 +93,14 @@ export class MoneyInputDirective implements ControlValueAccessor {
   }
 
   private parse(raw: string): { numeric: number | null; formatted: string } {
-    let cleaned = raw.replace(/[^0-9.,]/g, '');
-    const firstSep = cleaned.search(/[.,]/);
-    if (firstSep !== -1) {
-      const before = cleaned.slice(0, firstSep).replace(/[.,]/g, '');
-      const after = cleaned.slice(firstSep + 1).replace(/[.,]/g, '');
+    // Commas are always thousand separators in our en-US formatting — drop them
+    // so re-typing into an already-formatted value like "10,000" doesn't get
+    // re-interpreted as a decimal. Only '.' is treated as the decimal mark.
+    let cleaned = raw.replace(/[^0-9.]/g, '');
+    const firstDot = cleaned.indexOf('.');
+    if (firstDot !== -1) {
+      const before = cleaned.slice(0, firstDot);
+      const after = cleaned.slice(firstDot + 1).replace(/\./g, '');
       cleaned = `${before}.${after}`;
     }
     if (cleaned === '' || cleaned === '.') {

@@ -24,13 +24,17 @@ html {
 	min-height: 100%;
 	scroll-padding-bottom: calc(112px + env(safe-area-inset-bottom));
 	scroll-behavior: smooth;
+	/* Prevent rubber-band / page-level overscroll so the PWA feels native. */
+	overscroll-behavior: none;
+	-webkit-text-size-adjust: 100%;
+	touch-action: pan-y;
 }
 
 body {
 	min-height: 100%;
 	margin: 0;
 	overflow-x: hidden;
-	overscroll-behavior-y: contain;
+	overscroll-behavior: none;
 	background: var(--black);
 	color: var(--text-primary);
 	font-family: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
@@ -40,7 +44,7 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-tap-highlight-color: transparent;
-	touch-action: manipulation;
+	touch-action: pan-y;
 }
 
 button,

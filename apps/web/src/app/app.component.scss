@@ -2080,18 +2080,17 @@ th:last-child {
 		display: none;
 	}
 
-	/* Compact safe-area handling: keep the topbar close to the status bar
-	 * without stacking extra padding (the sticky topbar already adds its own
-	 * safe-area inset). */
+	/* Status-bar area is owned by iOS (opaque `black` style), so the web view
+	 * already starts below it — no extra top safe-area padding needed. */
 	.app-shell {
 		--mobile-nav-clearance: 108px;
-		// padding-top: env(safe-area-inset-top);
+		padding-top: 0;
 	}
 
-	/* Re-anchor the sticky topbar so it sits flush with the viewport top. */
+	/* Re-anchor the sticky topbar flush with the viewport top. */
 	.topbar {
-		// margin-top: calc(-1 * env(safe-area-inset-top));
-		// padding-top: calc(8px + env(safe-area-inset-top));
+		margin-top: 0;
+		padding-top: 8px;
 		padding-bottom: 8px;
 	}
 
