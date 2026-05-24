@@ -3,7 +3,6 @@ services:
     build:
       context: .
       target: api
-    image: budget-signal-api:latest
     container_name: budget-signal-api
     restart: unless-stopped
     ports:
@@ -25,7 +24,6 @@ services:
     build:
       context: .
       target: web
-    image: budget-signal-web:latest
     container_name: budget-signal-web
     restart: unless-stopped
     depends_on:

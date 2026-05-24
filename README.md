@@ -105,7 +105,9 @@ http://YOUR_SERVER_IP:4210/api/health
 
 `BUDGET_SUMMARY_EMAIL_TO` accepts comma-separated or semicolon-separated recipients. The compose file mounts the named volume `budget-signal-data` to `/data`; keep that volume when recreating the container so app data survives image updates. Do not delete the volume unless you want to reset the app data.
 
-To update the app after pushing changes, use Portainer's `Pull and redeploy` or `Update the stack` action and keep the existing `budget-signal-data` volume.
+To update the app after pushing changes, use Portainer's stack update flow from the repository and rebuild the stack. Keep the existing `budget-signal-data` volume so app data survives the new containers.
+
+Do not use a pull-only redeploy for the default `docker-compose.yml`. This compose file builds the `web` and `api` images directly from the repository; `budget-signal-web` and `budget-signal-api` are not public registry images.
 
 If Portainer cannot build directly from your Git repository, build and push the two images from your machine, then change the `api.image` and `web.image` values in the stack to your registry images:
 
