@@ -1,9 +1,10 @@
 services:
-  budget-signal:
+  api:
     build:
       context: .
-    image: budget-signal:latest
-    container_name: budget-signal
+      target: api
+    image: budget-signal-api:latest
+    container_name: budget-signal-api
     restart: unless-stopped
     ports:
       - "8734:8734"
@@ -18,6 +19,18 @@ services:
       BUDGET_SUMMARY_EMAIL_SUBJECT_PREFIX: "${BUDGET_SUMMARY_EMAIL_SUBJECT_PREFIX:-Budget Signal}"
     volumes:
       - budget-signal-data:/data
+
+  web:
+    build:
+      context: .
+      target: web
+    image: budget-signal-web:latest
+    container_name: budget-signal-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "4210:4210"
 
 volumes:
   budget-signal-data:

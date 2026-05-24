@@ -40,16 +40,22 @@ npm run test:all
 
 ## Docker / Portainer
 
-The simplest production shape is one container. The Docker image builds the Angular SPA, runs the Node API on port `8734`, serves the built SPA from the same Node process, and stores persistent JSON data in `/data`.
+The production Docker shape uses two independently deployed services from the same repository:
+
+- `web`: builds and serves the Angular SPA through Nginx on port `4210`.
+- `api`: runs the Node API on port `8734` and stores persistent JSON data in `/data`.
+
+The Angular web container proxies `/api` requests to the API service, so the web app can keep using same-origin `/api/...` calls while the API remains directly reachable on port `8734` for other web or mobile clients.
 
 Build and run locally:
 
 ```bash
 docker compose up --build -d
 curl http://127.0.0.1:8734/api/health
+curl http://127.0.0.1:4210/api/health
 ```
 
-Open `http://127.0.0.1:8734/`. In Docker, you do not need the Angular dev server or `proxy.conf.json`; `/api` and the SPA are same-origin.
+Open `http://127.0.0.1:4210/` for the Angular web app. API clients can call `http://127.0.0.1:8734/api/...` directly.
 
 ### Use It In Portainer
 
@@ -74,32 +80,40 @@ BUDGET_SUMMARY_EMAIL_SUBJECT_PREFIX=VD Presupuesto
 CORS_ORIGIN=https://budget.yourdomain.com
 ```
 
-For a direct IP deployment without a domain, `CORS_ORIGIN=*` is fine. For production with a domain, set it to the exact app URL, for example `https://budget.yourdomain.com`.
+For a direct IP deployment without a domain, `CORS_ORIGIN=*` is fine. For production with separate web and API domains, set it to the exact web app URL, for example `https://budget.yourdomain.com`.
 
 After the stack starts, open:
 
 ```text
-http://YOUR_SERVER_IP:8734
+http://YOUR_SERVER_IP:4210
 ```
 
-The health check should return `{"status":"ok"}` at:
+The API is directly reachable at:
 
 ```text
 http://YOUR_SERVER_IP:8734/api/health
+```
+
+The same API health check should also work through the web container proxy at:
+
+```text
+http://YOUR_SERVER_IP:4210/api/health
 ```
 
 `BUDGET_SUMMARY_EMAIL_TO` accepts comma-separated or semicolon-separated recipients. The compose file mounts the named volume `budget-signal-data` to `/data`; keep that volume when recreating the container so app data survives image updates. Do not delete the volume unless you want to reset the app data.
 
 To update the app after pushing changes, use Portainer's `Pull and redeploy` or `Update the stack` action and keep the existing `budget-signal-data` volume.
 
-If Portainer cannot build directly from your Git repository, build and push the image from your machine, then change `image: budget-signal:latest` in the stack to your registry image:
+If Portainer cannot build directly from your Git repository, build and push the two images from your machine, then change the `api.image` and `web.image` values in the stack to your registry images:
 
 ```bash
-docker build -t your-registry/budget-signal:latest .
-docker push your-registry/budget-signal:latest
+docker build --target api -t your-registry/budget-signal-api:latest .
+docker build --target web -t your-registry/budget-signal-web:latest .
+docker push your-registry/budget-signal-api:latest
+docker push your-registry/budget-signal-web:latest
 ```
 
-For a domain, point your reverse proxy to the container port `8734`. The app's health check is available at `/api/health`.
+For a domain, point the web reverse proxy to `4210`. If you want a public API domain for other clients, point that API reverse proxy to `8734`. The API health check is available at `/api/health` on both surfaces.
 
 ## Structure
 

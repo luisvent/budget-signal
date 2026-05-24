@@ -23,7 +23,7 @@ Last updated: May 18, 2026
 - [x] Backend `Presupuesto` smart summary engine added with Spanish dashboard verdicts based on net result, savings rate, expense pressure, USD exposure, and Dominican economic context.
 - [x] Backend `Balance de Pago` smart summary engine added with Spanish dashboard verdicts based on whether generated money covers credit cards and actual month-end expenses.
 - [x] Backend Resend email endpoint added so the dashboard can send the current budget summary without exposing email secrets to the SPA.
-- [x] Docker/Portainer deployment added as one container serving the Angular production build and Node API on port `8734` with persistent `/data` storage.
+- [x] Docker/Portainer deployment split into independent Angular web and Node API services on ports `4210` and `8734`, with persistent API `/data` storage.
 - [x] `Patrimonio` view added for assets, savings, investments, cash, accounts, mortgage/loan/credit-card debts, net worth chart, and editable asset/debt ledgers.
 - [x] Backend `Patrimonio` summary engine upgraded with source-backed score dimensions, diagnostics, benchmarks, stress tests, action plan, RD/global context, and deterministic research references.
 - [x] `Patrimonio` UI expanded to show analysis sections, score drivers, stress scenarios, benchmarks, source base, and priority plan from the backend.

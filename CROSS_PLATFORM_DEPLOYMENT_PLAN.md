@@ -6,14 +6,14 @@ Last updated: May 23, 2026
 
 Build Budget Signal as one product that runs well on:
 
-- Web browsers through the current simple Angular SPA plus Node API Docker deployment.
+- Web browsers through an Angular SPA Docker service plus an independent Node API Docker service.
 - iPhone as an installable app without publishing to the public App Store.
 
 The architecture should keep the existing separation between frontend and backend:
 
 - Angular owns UI, interaction, responsive layout, and local platform integration.
 - Node owns persistence, statement parsing, financial summary engines, email delivery, and API contracts.
-- Docker remains the simplest production path for web plus API.
+- Docker remains the simplest production path for deploying the web and API services together or separately.
 
 ## Current Project Shape
 
@@ -24,7 +24,7 @@ The project is already close to the right shape for cross-platform delivery.
 - `src/app/core/services/api-client.service.ts` is the frontend API boundary.
 - Frontend services call backend endpoints through `/api/...` paths.
 - Local development runs the API on `127.0.0.1:3000` and Angular on `localhost:4200` with `proxy.conf.json` forwarding `/api`.
-- Docker builds the Angular app and serves the built SPA from the same Node process on port `8734`.
+- Docker builds two deployment targets: Angular web served by Nginx on port `4210`, and the Node API on port `8734`.
 - Production persistence is a JSON store mounted at `/data` through Docker volume `budget-signal-data`.
 - Backend engines generate the important financial summaries, so iOS does not need a separate business-logic implementation.
 
@@ -46,22 +46,27 @@ Capacitor gives a real iOS app bundle using the same Angular code. It can be ins
 ```text
 Web browser
   -> https://budget.example.com
-  -> Docker container
-  -> Node serves Angular static files and /api
+  -> Docker web service on port 4210
+  -> Nginx serves Angular static files and proxies /api to the API service
+  -> JSON data persisted in /data
+
+External API client
+  -> https://api.budget.example.com or http://server:8734
+  -> Docker API service on port 8734
   -> JSON data persisted in /data
 
 iOS PWA
   -> Safari Add to Home Screen
   -> https://budget.example.com
-  -> same Docker container and same /api
+  -> same web service and proxied /api
 
 iOS Capacitor app
   -> Angular build bundled inside WKWebView
-  -> calls https://budget.example.com/api
-  -> same Docker container and same /api
+  -> calls https://api.budget.example.com/api or the deployed API origin
+  -> same API service
 ```
 
-The web app should continue using same-origin `/api` calls. The native iOS shell needs an absolute HTTPS API base URL because `/api` inside Capacitor points at the local app WebView origin, not the deployed server.
+The web app can continue using same-origin `/api` calls through the web service proxy. Native shells and other clients should call the API service through an absolute HTTPS API base URL because `/api` inside Capacitor points at the local app WebView origin, not the deployed server.
 
 ## Local iOS Install Options
 
@@ -71,7 +76,7 @@ This is the simplest solution and should be implemented first.
 
 How it works:
 
-1. Deploy the current Docker app to a reachable HTTPS URL.
+1. Deploy the web service to a reachable HTTPS URL and the API service behind the web proxy or its own HTTPS API URL.
 2. Open the URL in Safari on iPhone.
 3. Tap Share.
 4. Tap Add to Home Screen.
@@ -83,7 +88,7 @@ Benefits:
 - No TestFlight.
 - No Xcode.
 - No provisioning profiles.
-- Uses the existing Docker deployment.
+- Uses the existing Docker deployment services.
 - Updates are instant after redeploying the web app.
 
 Tradeoffs:
@@ -152,10 +157,13 @@ Do not rewrite the app in Flutter, React Native, SwiftUI, or Ionic. The current 
 
 ## Implementation Plan
 
-### Phase 1: Stabilize Web Plus API Deployment
+### Phase 1: Stabilize Independent Web Plus API Deployment
 
-- Keep the current Dockerfile one-container deployment.
-- Keep `docker-compose.yml` with a single `budget-signal` service and the `budget-signal-data` volume.
+- Keep `docker-compose.yml` with separate `web` and `api` services.
+- Serve Angular through the `web` service on port `4210`.
+- Serve the Node API through the `api` service on port `8734`.
+- Keep the `budget-signal-data` volume mounted only on the API service.
+- Keep the web service proxying `/api` to the API service so the Angular app can use same-origin requests.
 - Put the app behind HTTPS before using it from iPhone outside local development.
 - Use a reverse proxy such as Caddy, Traefik, Nginx Proxy Manager, Cloudflare Tunnel, or Portainer-managed stack routing.
 - Set `CORS_ORIGIN` to the production web URL instead of `*` once authentication is added.
@@ -166,8 +174,12 @@ Expected production shape:
 ```text
 https://budget.example.com
   -> reverse proxy with TLS
-  -> Docker service budget-signal:8734
-  -> Node API and Angular static files
+  -> Docker web service:4210
+  -> Angular static files and /api proxy
+
+https://api.budget.example.com or trusted clients
+  -> reverse proxy with TLS or server port 8734
+  -> Docker API service:8734
   -> /data Docker volume
 ```
 
