@@ -109,7 +109,7 @@
                     <option value="DOP">DOP</option>
                     <option value="USD">USD</option>
                   </select>
-                  <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'asset-amount-' + asset.id" [attr.aria-label]="'Monto de ' + asset.name" [ngModel]="asset.amount" (ngModelChange)="wealth.updateAssetAmount(asset.id, $event)">
+                  <input type="text" inputmode="decimal" appMoneyInput [name]="'asset-amount-' + asset.id" [attr.aria-label]="'Monto de ' + asset.name" [ngModel]="asset.amount" (ngModelChange)="wealth.updateAssetAmount(asset.id, $event)">
                   <button class="ghost-button wealth-entry-remove" type="button" [attr.aria-label]="'Quitar ' + asset.name" (click)="wealth.removeAsset(asset.id)">
                     <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
                     <span>QUITAR</span>
@@ -141,7 +141,7 @@
                 </label>
                 <label>
                   <span class="label">MONTO</span>
-                  <input type="number" inputmode="decimal" min="0" step="0.01" name="assetAmount" [ngModel]="assetAmount()" (ngModelChange)="assetAmount.set($event)">
+                  <input type="text" inputmode="decimal" appMoneyInput name="assetAmount" [ngModel]="assetAmount()" (ngModelChange)="assetAmount.set($event)">
                 </label>
                 <button class="secondary-button" type="submit" [disabled]="assetName().trim().length === 0">
                   <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
@@ -182,9 +182,9 @@
                     <option value="DOP">DOP</option>
                     <option value="USD">USD</option>
                   </select>
-                  <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'liability-amount-' + liability.id" [attr.aria-label]="'Balance de ' + liability.name" [ngModel]="liability.amount" (ngModelChange)="wealth.updateLiabilityAmount(liability.id, $event)">
+                  <input type="text" inputmode="decimal" appMoneyInput [name]="'liability-amount-' + liability.id" [attr.aria-label]="'Balance de ' + liability.name" [ngModel]="liability.amount" (ngModelChange)="wealth.updateLiabilityAmount(liability.id, $event)">
                   <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'liability-rate-' + liability.id" [attr.aria-label]="'Tasa de ' + liability.name" [ngModel]="liability.interestRate" (ngModelChange)="wealth.updateLiabilityInterestRate(liability.id, $event)">
-                  <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'liability-payment-' + liability.id" [attr.aria-label]="'Pago mensual de ' + liability.name" [ngModel]="liability.monthlyPayment" (ngModelChange)="wealth.updateLiabilityMonthlyPayment(liability.id, $event)">
+                  <input type="text" inputmode="decimal" appMoneyInput [name]="'liability-payment-' + liability.id" [attr.aria-label]="'Pago mensual de ' + liability.name" [ngModel]="liability.monthlyPayment" (ngModelChange)="wealth.updateLiabilityMonthlyPayment(liability.id, $event)">
                   <button class="ghost-button wealth-entry-remove" type="button" [attr.aria-label]="'Quitar ' + liability.name" (click)="wealth.removeLiability(liability.id)">
                     <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
                     <span>QUITAR</span>
@@ -216,7 +216,7 @@
                 </label>
                 <label>
                   <span class="label">BALANCE</span>
-                  <input type="number" inputmode="decimal" min="0" step="0.01" name="liabilityAmount" [ngModel]="liabilityAmount()" (ngModelChange)="liabilityAmount.set($event)">
+                  <input type="text" inputmode="decimal" appMoneyInput name="liabilityAmount" [ngModel]="liabilityAmount()" (ngModelChange)="liabilityAmount.set($event)">
                 </label>
                 <label>
                   <span class="label">TASA %</span>
@@ -224,7 +224,7 @@
                 </label>
                 <label>
                   <span class="label">PAGO MES</span>
-                  <input type="number" inputmode="decimal" min="0" step="0.01" name="liabilityMonthlyPayment" [ngModel]="liabilityMonthlyPayment()" (ngModelChange)="liabilityMonthlyPayment.set($event)">
+                  <input type="text" inputmode="decimal" appMoneyInput name="liabilityMonthlyPayment" [ngModel]="liabilityMonthlyPayment()" (ngModelChange)="liabilityMonthlyPayment.set($event)">
                 </label>
                 <button class="secondary-button" type="submit" [disabled]="liabilityName().trim().length === 0">
                   <span class="dot-icon dot-icon-add" aria-hidden="true"></span>

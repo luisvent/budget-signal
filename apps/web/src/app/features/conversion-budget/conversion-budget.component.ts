@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ConversionBudgetService } from '../../core/services/conversion-budget.service';
+import { MoneyInputDirective } from '../../shared/money-input.directive';
 
 @Component({
   selector: 'app-conversion-budget',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MoneyInputDirective],
   templateUrl: './conversion-budget.component.html'
 })
 export class ConversionBudgetComponent {

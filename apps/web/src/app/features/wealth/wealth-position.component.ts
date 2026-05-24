@@ -3,10 +3,11 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyCode, WealthAssetCategory, WealthLiabilityCategory } from '../../core/models/budget.models';
 import { WealthPositionService } from '../../core/services/wealth-position.service';
+import { MoneyInputDirective } from '../../shared/money-input.directive';
 
 @Component({
   selector: 'app-wealth-position',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MoneyInputDirective],
   templateUrl: './wealth-position.component.html',
   styleUrl: './wealth-position.component.scss'
 })

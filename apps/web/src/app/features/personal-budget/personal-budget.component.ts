@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CurrencyCode, PersonalBudgetEntry } from '../../core/models/budget.models';
 import { PersonalBudgetService } from '../../core/services/personal-budget.service';
 import { BudgetPressureBarComponent } from '../../shared/budget-pressure-bar.component';
+import { MoneyInputDirective } from '../../shared/money-input.directive';
 
 type BudgetCategoryImage = {
   readonly src: string;
@@ -31,7 +32,7 @@ const usdToDopRate = 60;
 
 @Component({
   selector: 'app-personal-budget',
-  imports: [CommonModule, FormsModule, BudgetPressureBarComponent],
+  imports: [CommonModule, FormsModule, BudgetPressureBarComponent, MoneyInputDirective],
   templateUrl: './personal-budget.component.html',
   styleUrl: './personal-budget.component.scss'
 })

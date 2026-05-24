@@ -82,7 +82,7 @@
                   <option value="DOP">DOP</option>
                   <option value="USD">USD</option>
                 </select>
-                <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'expense-amount-' + expense.id" [attr.aria-label]="'Monto de ' + expense.name" [ngModel]="expense.amount" (ngModelChange)="budget.updateExpenseAmount(expense.id, $event)">
+                <input type="text" inputmode="decimal" appMoneyInput [name]="'expense-amount-' + expense.id" [attr.aria-label]="'Monto de ' + expense.name" [ngModel]="expense.amount" (ngModelChange)="budget.updateExpenseAmount(expense.id, $event)">
                 @if (expense.custom) {
                   <button class="ghost-button budget-entry-remove" type="button" [attr.aria-label]="'Quitar ' + expense.name" (click)="budget.removeExpense(expense.id)">
                     <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
@@ -113,7 +113,7 @@
               </label>
               <label>
                 <span class="label">MONTO</span>
-                <input type="number" inputmode="decimal" min="0" step="0.01" name="newExpenseAmount" [ngModel]="expenseAmount()" (ngModelChange)="expenseAmount.set($event)">
+                <input type="text" inputmode="decimal" appMoneyInput name="newExpenseAmount" [ngModel]="expenseAmount()" (ngModelChange)="expenseAmount.set($event)">
               </label>
               <button class="secondary-button" type="submit" [disabled]="!canAddExpense()">
                 <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
@@ -148,7 +148,7 @@
                   <option value="DOP">DOP</option>
                   <option value="USD">USD</option>
                 </select>
-                <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'income-amount-' + income.id" [attr.aria-label]="'Monto de ' + income.name" [ngModel]="income.amount" (ngModelChange)="budget.updateIncomeAmount(income.id, $event)">
+                <input type="text" inputmode="decimal" appMoneyInput [name]="'income-amount-' + income.id" [attr.aria-label]="'Monto de ' + income.name" [ngModel]="income.amount" (ngModelChange)="budget.updateIncomeAmount(income.id, $event)">
               </div>
             }
           </div>

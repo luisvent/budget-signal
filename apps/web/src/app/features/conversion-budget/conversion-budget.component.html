@@ -68,7 +68,7 @@
           <div class="conversion-start-row">
             <label>
               <span class="label">MONTO</span>
-              <input type="number" inputmode="decimal" min="0" step="0.01" name="conversionSourceAmount" [ngModel]="flow.sourceAmount()" (ngModelChange)="flow.updateSourceAmount($event)">
+              <input type="text" inputmode="decimal" appMoneyInput name="conversionSourceAmount" [ngModel]="flow.sourceAmount()" (ngModelChange)="flow.updateSourceAmount($event)">
             </label>
             <label>
               <span class="label">MONEDA</span>
@@ -85,7 +85,7 @@
             @for (entry of flow.sourceDeductions(); track entry.id) {
               <div class="conversion-entry-row" [class.removable]="entry.custom">
                 <span class="budget-entry-name">{{ entry.name }}</span>
-                <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'source-deduction-' + entry.id" [attr.aria-label]="'Monto de ' + entry.name" [ngModel]="entry.amount" (ngModelChange)="flow.updateSourceDeduction(entry.id, $event)">
+                <input type="text" inputmode="decimal" appMoneyInput [name]="'source-deduction-' + entry.id" [attr.aria-label]="'Monto de ' + entry.name" [ngModel]="entry.amount" (ngModelChange)="flow.updateSourceDeduction(entry.id, $event)">
                 @if (entry.custom) {
                   <button class="ghost-button conversion-entry-remove" type="button" [attr.aria-label]="'Quitar ' + entry.name" (click)="flow.removeSourceDeduction(entry.id)">
                     <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
@@ -106,7 +106,7 @@
               </label>
               <label>
                 <span class="label">MONTO</span>
-                <input type="number" inputmode="decimal" min="0" step="0.01" name="newSourceDeductionAmount" [ngModel]="sourceDeductionAmount()" (ngModelChange)="sourceDeductionAmount.set($event)">
+                <input type="text" inputmode="decimal" appMoneyInput name="newSourceDeductionAmount" [ngModel]="sourceDeductionAmount()" (ngModelChange)="sourceDeductionAmount.set($event)">
               </label>
               <button class="secondary-button" type="submit" [disabled]="!canAddSourceDeduction()">
                 <span class="dot-icon dot-icon-add" aria-hidden="true"></span>
@@ -142,14 +142,14 @@
               <span class="dot-icon dot-icon-income" aria-hidden="true"></span>
               <span>ENTRADA EXTRA</span>
             </span>
-            <input type="number" inputmode="decimal" min="0" step="0.01" name="afterConversionAddition" aria-label="Entrada extra después de convertir" [ngModel]="flow.afterConversionAddition()" (ngModelChange)="flow.updateAfterConversionAddition($event)">
+            <input type="text" inputmode="decimal" appMoneyInput name="afterConversionAddition" aria-label="Entrada extra después de convertir" [ngModel]="flow.afterConversionAddition()" (ngModelChange)="flow.updateAfterConversionAddition($event)">
           </label>
 
           <div class="conversion-entry-list">
             @for (entry of flow.dopDeductions(); track entry.id) {
               <div class="conversion-entry-row">
                 <span class="budget-entry-name">{{ entry.name }}</span>
-                <input type="number" inputmode="decimal" min="0" step="0.01" [name]="'dop-deduction-' + entry.id" [attr.aria-label]="'Monto de ' + entry.name" [ngModel]="entry.amount" (ngModelChange)="flow.updateDopDeduction(entry.id, $event)">
+                <input type="text" inputmode="decimal" appMoneyInput [name]="'dop-deduction-' + entry.id" [attr.aria-label]="'Monto de ' + entry.name" [ngModel]="entry.amount" (ngModelChange)="flow.updateDopDeduction(entry.id, $event)">
               </div>
             }
           </div>
