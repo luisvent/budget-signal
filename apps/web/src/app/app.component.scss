@@ -2325,3 +2325,68 @@ th:last-child {
 	transition: transform 80ms ease-out;
 }
 
+/* =====================================================================
+ * Import section — mobile-friendly layout
+ * =================================================================== */
+
+@media (max-width: 960px) {
+	.import-panel textarea {
+		min-height: 200px;
+	}
+
+	.import-console {
+		gap: 10px;
+	}
+}
+
+@media (max-width: 620px) {
+	.import-panel .section-heading {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	.import-panel .system-status {
+		font-size: 11px;
+	}
+
+	.import-panel textarea {
+		min-height: 160px;
+		font-size: 14px;
+	}
+
+	/* Full-width buttons stack cleanly; primary action sits first visually. */
+	.import-console .primary-button,
+	.import-console .secondary-button,
+	.import-console .ghost-button {
+		width: 100%;
+		justify-content: center;
+	}
+
+	/* Action buttons grouped tightly above the metrics. */
+	.import-console {
+		gap: 8px;
+	}
+
+	.import-metrics {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px 12px;
+		margin-top: 4px;
+		padding-top: 14px;
+	}
+
+	.import-metrics strong,
+	.format-readout strong {
+		font-size: 20px;
+	}
+
+	.format-readout {
+		padding-top: 12px;
+		border-top: 1px solid var(--border);
+	}
+
+	.file-list {
+		max-height: 140px;
+	}
+}
+

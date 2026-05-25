@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-05-25T02:12:07.108Z",
+  "updatedAt": "2026-05-25T02:27:48.516Z",
   "data": {
-    "theme": "light",
+    "theme": "dark",
     "budgets": [
       {
         "category": "Groceries",
@@ -248,6 +248,208 @@
       ],
       "liabilities": []
     },
-    "statements": []
+    "statements": [
+      {
+        "id": "1add30a5-98d1-4d36-b7b3-9f5cee146255-0",
+        "name": "sample-statement.csv",
+        "source": "sample-statement.csv",
+        "format": "CSV",
+        "importedAt": "2026-05-25T02:24:36.882Z",
+        "totalRows": 21,
+        "paymentRows": 0,
+        "skippedRows": 0,
+        "transactions": [
+          {
+            "id": 1,
+            "date": "2026-04-03",
+            "merchant": "City Grocer",
+            "category": "Groceries",
+            "amount": 128.34,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 2,
+            "date": "2026-04-05",
+            "merchant": "Blue Bottle",
+            "category": "Dining",
+            "amount": 18.4,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 3,
+            "date": "2026-04-06",
+            "merchant": "Mta",
+            "category": "Transport",
+            "amount": 33,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 4,
+            "date": "2026-04-08",
+            "merchant": "Figma",
+            "category": "Subscriptions",
+            "amount": 15,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 5,
+            "date": "2026-04-10",
+            "merchant": "Fresh Market",
+            "category": "Groceries",
+            "amount": 214.86,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 6,
+            "date": "2026-04-11",
+            "merchant": "Tacombi",
+            "category": "Dining",
+            "amount": 74.9,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 7,
+            "date": "2026-04-13",
+            "merchant": "Delta Air Lines",
+            "category": "Travel",
+            "amount": 462.2,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 8,
+            "date": "2026-04-15",
+            "merchant": "Amazon",
+            "category": "Shopping",
+            "amount": 139.68,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 9,
+            "date": "2026-04-16",
+            "merchant": "Coned",
+            "category": "Utilities",
+            "amount": 116.72,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 10,
+            "date": "2026-04-18",
+            "merchant": "Uber",
+            "category": "Transport",
+            "amount": 48.12,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 11,
+            "date": "2026-04-21",
+            "merchant": "Netflix",
+            "category": "Subscriptions",
+            "amount": 22.99,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 12,
+            "date": "2026-04-23",
+            "merchant": "Soho House Dinner",
+            "category": "Dining",
+            "amount": 188.45,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 13,
+            "date": "2026-04-25",
+            "merchant": "Target",
+            "category": "Shopping",
+            "amount": 243.18,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 14,
+            "date": "2026-04-27",
+            "merchant": "Cvs Pharmacy",
+            "category": "Health",
+            "amount": 64.2,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 15,
+            "date": "2026-04-29",
+            "merchant": "Marriott",
+            "category": "Travel",
+            "amount": 612.44,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 16,
+            "date": "2026-05-01",
+            "merchant": "Apple",
+            "category": "Subscriptions",
+            "amount": 9.99,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 17,
+            "date": "2026-05-02",
+            "merchant": "Whole Foods",
+            "category": "Groceries",
+            "amount": 172.1,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 18,
+            "date": "2026-05-03",
+            "merchant": "Uniqlo",
+            "category": "Shopping",
+            "amount": 96.4,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 19,
+            "date": "2026-05-04",
+            "merchant": "Lyft",
+            "category": "Transport",
+            "amount": 27.65,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 20,
+            "date": "2026-05-04",
+            "merchant": "Balthazar",
+            "category": "Dining",
+            "amount": 141.3,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          },
+          {
+            "id": 21,
+            "date": "2026-05-04",
+            "merchant": "Blue Bottle",
+            "category": "Dining",
+            "amount": 16.2,
+            "currency": "USD",
+            "source": "sample-statement.csv"
+          }
+        ]
+      }
+    ]
   }
 }

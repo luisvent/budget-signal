@@ -1,18 +1,18 @@
 :root {
-	--black: #000000;
-	--surface: #111111;
-	--surface-raised: #1a1a1a;
-	--border: #222222;
-	--border-visible: #333333;
-	--text-disabled: #666666;
-	--text-secondary: #999999;
-	--text-primary: #e8e8e8;
-	--text-display: #ffffff;
-	--accent: #d71921;
-	--accent-subtle: rgba(215, 25, 33, 0.15);
-	--success: #4a9e5c;
-	--warning: #d4a843;
-	--interactive: #5b9bf6;
+	--black: #0b0b0f;
+	--surface: #16161b;
+	--surface-raised: #1f1f26;
+	--border: #26262e;
+	--border-visible: #3a3a44;
+	--text-disabled: #5c5c66;
+	--text-secondary: #a3a3ad;
+	--text-primary: #e6e6ea;
+	--text-display: #fafafa;
+	--accent: #ef4444;
+	--accent-subtle: rgba(239, 68, 68, 0.16);
+	--success: #22c55e;
+	--warning: #f59e0b;
+	--interactive: #60a5fa;
 	color-scheme: dark;
 }
 
@@ -36,6 +36,10 @@ body {
 	overflow-x: hidden;
 	overscroll-behavior: none;
 	background: var(--black);
+	background-image:
+		radial-gradient(ellipse at top, rgba(96, 165, 250, 0.05), transparent 55%),
+		radial-gradient(ellipse at bottom right, rgba(239, 68, 68, 0.04), transparent 50%);
+	background-attachment: fixed;
 	color: var(--text-primary);
 	font-family: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
 	font-size: 16px;
