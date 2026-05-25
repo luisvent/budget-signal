@@ -13,8 +13,9 @@ const balanceContext = {
   ]
 };
 
-export function generateBalancePaymentSummary(conversionBudget) {
-  const totals = calculateBalanceTotals(conversionBudget);
+export function generateBalancePaymentSummary(conversionBudget, options = {}) {
+  const context = resolveContext(options);
+  const totals = calculateBalanceTotals(conversionBudget, context);
   const band = classifyBand(totals.finalDopResult);
   const risks = identifyRisks(totals);
   const score = calculateScore({ band, totals, risks });
@@ -40,21 +41,31 @@ export function generateBalancePaymentSummary(conversionBudget) {
     finalDopResult: roundMoney(totals.finalDopResult),
     coverageRatio: totals.dopDeductionTotal > 0 ? roundRatio(totals.afterConversionTotal / totals.dopDeductionTotal) : null,
     signals: risks,
-    context: balanceContext
+    context
   };
 }
 
-function calculateBalanceTotals(conversionBudget = {}) {
+function resolveContext(options) {
+  const rawRate = options?.exchangeRateDopPerUsd;
+  const numericRate = typeof rawRate === 'number' ? rawRate : Number(rawRate);
+  const exchangeRateDopPerUsd = Number.isFinite(numericRate) && numericRate > 0
+    ? numericRate
+    : balanceContext.exchangeRateDopPerUsd;
+
+  return { ...balanceContext, exchangeRateDopPerUsd };
+}
+
+function calculateBalanceTotals(conversionBudget = {}, context = balanceContext) {
   const sourceCurrency = conversionBudget.sourceCurrency === 'DOP' ? 'DOP' : 'USD';
   const sourceAmount = normalizeAmount(conversionBudget.sourceAmount);
   const afterConversionAddition = normalizeAmount(conversionBudget.afterConversionAddition);
-  const sourceFeeAmount = calculateSourceFeeAmount(sourceAmount, sourceCurrency);
+  const sourceFeeAmount = calculateSourceFeeAmount(sourceAmount, sourceCurrency, context);
   const sourceNetAmount = Math.max(0, sourceAmount - sourceFeeAmount);
   const sourceDeductionTotal = sumEntries(conversionBudget.sourceDeductions);
   const dopDeductionTotal = sumEntries(conversionBudget.dopDeductions);
   const sourceRemaining = sourceNetAmount - sourceDeductionTotal;
   const convertedDopAmount = sourceCurrency === 'USD'
-    ? sourceRemaining * balanceContext.exchangeRateDopPerUsd
+    ? sourceRemaining * context.exchangeRateDopPerUsd
     : sourceRemaining;
   const afterConversionTotal = convertedDopAmount + afterConversionAddition;
   const finalDopResult = afterConversionTotal - dopDeductionTotal;
@@ -74,15 +85,15 @@ function calculateBalanceTotals(conversionBudget = {}) {
   };
 }
 
-function calculateSourceFeeAmount(sourceAmount, sourceCurrency) {
+function calculateSourceFeeAmount(sourceAmount, sourceCurrency, context = balanceContext) {
   if (sourceAmount <= 0) {
     return 0;
   }
 
   const fixedFee = sourceCurrency === 'USD'
-    ? balanceContext.sourceFixedFeeUsd
-    : balanceContext.sourceFixedFeeUsd * balanceContext.exchangeRateDopPerUsd;
-  const feeAmount = sourceAmount * balanceContext.sourceAdjustmentRate + fixedFee;
+    ? context.sourceFixedFeeUsd
+    : context.sourceFixedFeeUsd * context.exchangeRateDopPerUsd;
+  const feeAmount = sourceAmount * context.sourceAdjustmentRate + fixedFee;
 
   return Math.min(sourceAmount, feeAmount);
 }

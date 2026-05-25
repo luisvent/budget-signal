@@ -8,8 +8,8 @@ import {
   emptyBalancePaymentSummary
 } from '../models/budget.models';
 import { ApiClientService } from './api-client.service';
+import { BudgetStoreService } from './budget-store.service';
 
-const usdToDopRate = 60;
 const sourceAdjustmentRate = 0.018;
 const sourceFixedFeeUsd = 7;
 const cashNeededUsdCategoryIds = new Set(['source-tarjeta-usd', 'source-tarjeta-lea-usd', 'source-tarjeta-acap-usd']);
@@ -19,11 +19,12 @@ const cashNeededDopCategoryNames = new Set(['tarjeta luis', 'tarjeta isi', 'tarj
 
 @Injectable({ providedIn: 'root' })
 export class ConversionBudgetService {
-  readonly exchangeRate = usdToDopRate;
+  private readonly api = inject(ApiClientService);
+  private readonly store = inject(BudgetStoreService);
+  readonly exchangeRate = this.store.exchangeRate;
   readonly sourceAdjustmentRate = sourceAdjustmentRate;
   readonly sourceFixedFeeUsd = sourceFixedFeeUsd;
 
-  private readonly api = inject(ApiClientService);
   private readonly backendReady = signal(false);
   private readonly currencyFormatters: Record<CurrencyCode, Intl.NumberFormat> = {
     DOP: new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP', maximumFractionDigits: 0 }),
@@ -39,7 +40,7 @@ export class ConversionBudgetService {
 
   readonly sourceFixedFee = computed(() => this.sourceCurrency() === 'USD'
     ? sourceFixedFeeUsd
-    : sourceFixedFeeUsd * this.exchangeRate);
+    : sourceFixedFeeUsd * this.exchangeRate());
   readonly sourceFeeAmount = computed(() => {
     const feeAmount = this.sourceAmount() * sourceAdjustmentRate + this.sourceFixedFee();
 
@@ -49,16 +50,16 @@ export class ConversionBudgetService {
   readonly sourceDeductionTotal = computed(() => this.calculateTotal(this.sourceDeductions()));
   readonly sourceRemaining = computed(() => this.sourceNetAmount() - this.sourceDeductionTotal());
   readonly convertedDopAmount = computed(() => this.sourceCurrency() === 'USD'
-    ? this.sourceRemaining() * this.exchangeRate
+    ? this.sourceRemaining() * this.exchangeRate()
     : this.sourceRemaining());
   readonly afterConversionTotal = computed(() => this.convertedDopAmount() + this.afterConversionAddition());
-  readonly afterConversionTotalUsd = computed(() => this.afterConversionTotal() / this.exchangeRate);
+  readonly afterConversionTotalUsd = computed(() => this.afterConversionTotal() / this.exchangeRate());
   readonly dopDeductionTotal = computed(() => this.calculateTotal(this.dopDeductions()));
   readonly finalDopResult = computed(() => this.afterConversionTotal() - this.dopDeductionTotal());
-  readonly finalDopResultUsd = computed(() => this.finalDopResult() / this.exchangeRate);
+  readonly finalDopResultUsd = computed(() => this.finalDopResult() / this.exchangeRate());
   readonly cashNeededUsd = computed(() => this.calculateSelectedTotal(this.sourceDeductions(), cashNeededUsdCategoryIds, cashNeededUsdCategoryNames));
   readonly cashNeededDop = computed(() => this.calculateSelectedTotal(this.dopDeductions(), cashNeededDopCategoryIds, cashNeededDopCategoryNames));
-  readonly cashNeededDopUsd = computed(() => this.cashNeededDop() / this.exchangeRate);
+  readonly cashNeededDopUsd = computed(() => this.cashNeededDop() / this.exchangeRate());
 
   constructor() {
     effect(() => {

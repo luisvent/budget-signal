@@ -1,4 +1,8 @@
 export type Theme = 'dark' | 'light';
+
+export interface SettingsSnapshot {
+  exchangeRateDopPerUsd: number;
+}
 export type Tone = 'success' | 'warning' | 'danger' | 'neutral';
 export type CurrencyCode = 'USD' | 'DOP';
 export type WealthAssetCategory = 'cash' | 'checking' | 'savings' | 'investment' | 'retirement' | 'real-estate' | 'vehicle' | 'business' | 'other';
@@ -364,6 +368,7 @@ export interface StatementFilePayload {
 
 export interface AppState {
   theme: Theme;
+  settings: SettingsSnapshot;
   budgets: Budget[];
   personalBudget: PersonalBudgetSnapshot;
   personalBudgetSummary: PresupuestoSummary;

@@ -51,7 +51,7 @@ export async function updatePersonalBudget(snapshot) {
 
 export async function getPersonalBudgetSummary() {
   const state = await readState();
-  return generatePresupuestoSummary(state.personalBudget);
+  return generatePresupuestoSummary(state.personalBudget, { exchangeRateDopPerUsd: state.settings.exchangeRateDopPerUsd });
 }
 
 export async function getConversionBudget() {
@@ -68,7 +68,7 @@ export async function updateConversionBudget(snapshot) {
 
 export async function getConversionBudgetSummary() {
   const state = await readState();
-  return generateBalancePaymentSummary(state.conversionBudget);
+  return generateBalancePaymentSummary(state.conversionBudget, { exchangeRateDopPerUsd: state.settings.exchangeRateDopPerUsd });
 }
 
 export async function getWealthPortfolio() {
@@ -85,13 +85,20 @@ export async function updateWealthPortfolio(snapshot) {
 
 export async function getWealthSummary() {
   const state = await readState();
-  return generateWealthSummary(state.wealthPortfolio, state.personalBudget);
+  return generateWealthSummary(state.wealthPortfolio, state.personalBudget, { exchangeRateDopPerUsd: state.settings.exchangeRateDopPerUsd });
 }
 
 export async function updateTheme(theme) {
   return updateState((state) => {
     state.theme = theme === 'light' ? 'light' : 'dark';
     return { theme: state.theme };
+  });
+}
+
+export async function updateSettings(snapshot = {}) {
+  return updateState((state) => {
+    state.settings = normalizeSettings({ ...state.settings, ...snapshot });
+    return { settings: state.settings };
   });
 }
 
@@ -215,16 +222,18 @@ async function updateState(mutator) {
 function getAppState(state, duplicateCount = 0) {
   const statements = sortStatements(state.statements);
   const transactions = transactionsFromStatements(statements);
+  const engineOptions = { exchangeRateDopPerUsd: state.settings.exchangeRateDopPerUsd };
 
   return {
     theme: state.theme,
+    settings: state.settings,
     budgets: state.budgets,
     personalBudget: state.personalBudget,
-    personalBudgetSummary: generatePresupuestoSummary(state.personalBudget),
+    personalBudgetSummary: generatePresupuestoSummary(state.personalBudget, engineOptions),
     conversionBudget: state.conversionBudget,
-    conversionBudgetSummary: generateBalancePaymentSummary(state.conversionBudget),
+    conversionBudgetSummary: generateBalancePaymentSummary(state.conversionBudget, engineOptions),
     wealthPortfolio: state.wealthPortfolio,
-    wealthSummary: generateWealthSummary(state.wealthPortfolio, state.personalBudget),
+    wealthSummary: generateWealthSummary(state.wealthPortfolio, state.personalBudget, engineOptions),
     statements,
     transactions,
     uploadedStatementNames: statements.map((statement) => statement.source),
@@ -271,12 +280,21 @@ function normalizeState(value) {
 
   return {
     theme: value?.theme === 'light' ? 'light' : 'dark',
+    settings: normalizeSettings(value?.settings),
     budgets: budgets.length > 0 ? budgets : clone(sampleBudgets),
     personalBudget: normalizePersonalBudget(value?.personalBudget),
     conversionBudget: normalizeConversionBudget(value?.conversionBudget),
     wealthPortfolio: normalizeWealthPortfolio(value?.wealthPortfolio),
     statements
   };
+}
+
+function normalizeSettings(value = {}) {
+  const rawRate = value?.exchangeRateDopPerUsd;
+  const numericRate = typeof rawRate === 'number' ? rawRate : Number(rawRate);
+  const exchangeRateDopPerUsd = Number.isFinite(numericRate) && numericRate > 0 ? numericRate : 60;
+
+  return { exchangeRateDopPerUsd };
 }
 
 function normalizePersonalBudget(snapshot = {}) {

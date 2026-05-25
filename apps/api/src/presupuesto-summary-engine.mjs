@@ -21,10 +21,11 @@ export function generatePresupuestoSummary(personalBudget, options = {}) {
   const incomes = Array.isArray(personalBudget?.incomes) ? personalBudget.incomes : [];
   const expenses = Array.isArray(personalBudget?.expenses) ? personalBudget.expenses : [];
   const cycle = calculateBudgetCycle(options.currentDate ?? options.now ?? new Date());
+  const context = resolveContext(options);
   const totals = calculateTotals(incomes, expenses);
-  const incomeEquivalent = totals.incomeDop + totals.incomeUsd * economicContext.exchangeRateDopPerUsd;
-  const expenseEquivalent = totals.expenseDop + totals.expenseUsd * economicContext.exchangeRateDopPerUsd;
-  const netDopEquivalent = totals.netDop + totals.netUsd * economicContext.exchangeRateDopPerUsd;
+  const incomeEquivalent = totals.incomeDop + totals.incomeUsd * context.exchangeRateDopPerUsd;
+  const expenseEquivalent = totals.expenseDop + totals.expenseUsd * context.exchangeRateDopPerUsd;
+  const netDopEquivalent = totals.netDop + totals.netUsd * context.exchangeRateDopPerUsd;
   const savingsRate = incomeEquivalent > 0 ? netDopEquivalent / incomeEquivalent : null;
   const expenseRatio = incomeEquivalent > 0 ? expenseEquivalent / incomeEquivalent : null;
   const reserveMonths = expenseEquivalent > 0 && netDopEquivalent > 0 ? netDopEquivalent / expenseEquivalent : 0;
@@ -52,8 +53,18 @@ export function generatePresupuestoSummary(personalBudget, options = {}) {
     reserveMonths: roundRatio(reserveMonths),
     cycle,
     signals: risks,
-    context: economicContext
+    context
   };
+}
+
+function resolveContext(options) {
+  const rawRate = options?.exchangeRateDopPerUsd;
+  const numericRate = typeof rawRate === 'number' ? rawRate : Number(rawRate);
+  const exchangeRateDopPerUsd = Number.isFinite(numericRate) && numericRate > 0
+    ? numericRate
+    : economicContext.exchangeRateDopPerUsd;
+
+  return { ...economicContext, exchangeRateDopPerUsd };
 }
 
 export function calculateBudgetCycle(currentDate = new Date()) {

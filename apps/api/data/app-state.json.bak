@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-05-24T06:40:14.857Z",
+  "updatedAt": "2026-05-25T01:59:28.134Z",
   "data": {
-    "theme": "dark",
+    "theme": "light",
     "budgets": [
       {
         "category": "Groceries",

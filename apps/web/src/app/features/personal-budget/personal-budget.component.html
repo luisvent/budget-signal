@@ -143,7 +143,10 @@
           <div class="budget-entry-list">
             @for (income of budget.incomes(); track income.id) {
               <div class="budget-entry-row">
-                <span class="budget-entry-name">{{ income.name }}</span>
+                <div class="budget-entry-identity">
+                  <span class="dot-icon dot-icon-income budget-entry-marker" aria-hidden="true"></span>
+                  <span class="budget-entry-name">{{ income.name }}</span>
+                </div>
                 <select [name]="'income-currency-' + income.id" [attr.aria-label]="'Moneda de ' + income.name" [ngModel]="income.currency" (ngModelChange)="budget.updateIncomeCurrency(income.id, $event)">
                   <option value="DOP">DOP</option>
                   <option value="USD">USD</option>

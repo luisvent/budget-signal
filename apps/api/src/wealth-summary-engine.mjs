@@ -199,7 +199,23 @@ const realAssetCategories = new Set(['real-estate', 'vehicle']);
 const highCostDebtCategories = new Set(['credit-card', 'personal-loan', 'tax']);
 const nonMortgageDebtCategories = new Set(['credit-card', 'personal-loan', 'vehicle-loan', 'student-loan', 'business-loan', 'tax', 'other']);
 
-export function generateWealthSummary(wealthPortfolio, personalBudget = {}) {
+export function generateWealthSummary(wealthPortfolio, personalBudget = {}, options = {}) {
+  const rawRate = options?.exchangeRateDopPerUsd;
+  const numericRate = typeof rawRate === 'number' ? rawRate : Number(rawRate);
+  const previousRate = financialContext.exchangeRateDopPerUsd;
+
+  if (Number.isFinite(numericRate) && numericRate > 0) {
+    financialContext.exchangeRateDopPerUsd = numericRate;
+  }
+
+  try {
+    return computeWealthSummary(wealthPortfolio, personalBudget);
+  } finally {
+    financialContext.exchangeRateDopPerUsd = previousRate;
+  }
+}
+
+function computeWealthSummary(wealthPortfolio, personalBudget = {}) {
   const assets = Array.isArray(wealthPortfolio?.assets) ? wealthPortfolio.assets : [];
   const liabilities = Array.isArray(wealthPortfolio?.liabilities) ? wealthPortfolio.liabilities : [];
   const assetMetrics = calculateAssetMetrics(assets);

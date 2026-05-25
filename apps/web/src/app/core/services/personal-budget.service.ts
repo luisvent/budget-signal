@@ -10,6 +10,7 @@ import {
   emptyPresupuestoSummary
 } from '../models/budget.models';
 import { ApiClientService } from './api-client.service';
+import { BudgetStoreService } from './budget-store.service';
 
 export interface BudgetPressure {
   score: number;
@@ -20,8 +21,6 @@ export interface BudgetPressure {
   detail: string;
 }
 
-const usdToDopRate = 60;
-
 @Injectable({ providedIn: 'root' })
 export class PersonalBudgetService {
   readonly incomes = signal<PersonalBudgetEntry[]>([]);
@@ -29,6 +28,7 @@ export class PersonalBudgetService {
   readonly summary = signal<PresupuestoSummary>(emptyPresupuestoSummary);
 
   private readonly api = inject(ApiClientService);
+  private readonly store = inject(BudgetStoreService);
   private readonly backendReady = signal(false);
 
   private readonly currencyFormatters: Record<CurrencyCode, Intl.NumberFormat> = {
@@ -112,7 +112,7 @@ export class PersonalBudgetService {
   }
 
   private convertToDop(entry: PersonalBudgetEntry): number {
-    return entry.currency === 'USD' ? entry.amount * usdToDopRate : entry.amount;
+    return entry.currency === 'USD' ? entry.amount * this.store.exchangeRate() : entry.amount;
   }
 
   private calculatePressure(): BudgetPressure {

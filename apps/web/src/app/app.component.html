@@ -4,6 +4,7 @@
     <button class="wordmark" type="button" (click)="showView('budget')" aria-label="Panel de Señal de Presupuesto">
       <span class="signal-dot" [attr.data-level]="budgetSignalLevel()" [style.color]="budgetSignalColor()"></span>
       <span>SEÑAL DE PRESUPUESTO</span>
+      <span class="wordmark-rate" aria-label="Tasa de cambio">RD$ {{ store.exchangeRate() }}/USD</span>
       <span class="mobile-status-badge" [attr.data-tone]="personalBudget.summary().tone">{{ personalBudget.summary().headline }}</span>
     </button>
 
@@ -23,6 +24,10 @@
       <button type="button" [class.active-view]="activeView() === 'import'" [attr.aria-current]="activeView() === 'import' ? 'page' : null" (click)="showView('import')">
         <span class="dot-icon dot-icon-import" aria-hidden="true"></span>
         <span>IMPORTAR</span>
+      </button>
+      <button class="settings-trigger" type="button" (click)="openSettings()" aria-label="Abrir ajustes">
+        <span class="dot-icon dot-icon-theme" aria-hidden="true"></span>
+        <span>AJUSTES</span>
       </button>
     </nav>
   </header>
@@ -113,7 +118,60 @@
       <span class="dot-icon dot-icon-import" aria-hidden="true"></span>
       <span>IMPORT.</span>
     </button>
+    <button class="settings-trigger" type="button" (click)="openSettings()" aria-label="Abrir ajustes">
+      <span class="dot-icon dot-icon-theme" aria-hidden="true"></span>
+      <span>AJUSTES</span>
+    </button>
   </nav>
+
+  @if (settingsOpen()) {
+    <div class="settings-overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title" (click)="closeSettings()">
+      <div class="settings-sheet" (click)="$event.stopPropagation()">
+        <header class="settings-sheet-header">
+          <div>
+            <p class="label label-with-icon">
+              <span class="dot-icon dot-icon-theme" aria-hidden="true"></span>
+              <span>AJUSTES</span>
+            </p>
+            <h2 id="settings-title">Preferencias</h2>
+          </div>
+          <button class="ghost-button settings-close" type="button" aria-label="Cerrar ajustes" (click)="closeSettings()">
+            <span class="dot-icon dot-icon-clear" aria-hidden="true"></span>
+          </button>
+        </header>
+
+        <section class="settings-row">
+          <div class="settings-row-info">
+            <span class="label">TEMA</span>
+            <strong>{{ store.theme() === 'dark' ? 'OSCURO' : 'CLARO' }}</strong>
+            <small>Cambia entre modo claro y oscuro.</small>
+          </div>
+          <button class="secondary-button" type="button" (click)="toggleTheme()">
+            <span class="dot-icon dot-icon-theme" aria-hidden="true"></span>
+            <span>{{ store.theme() === 'dark' ? 'USAR CLARO' : 'USAR OSCURO' }}</span>
+          </button>
+        </section>
+
+        <section class="settings-row">
+          <div class="settings-row-info">
+            <span class="label">TASA DE CAMBIO</span>
+            <strong>1 USD = RD$ {{ draftExchangeRate() }}</strong>
+            <small>Aplica a todos los cálculos en USD.</small>
+          </div>
+          <input class="settings-input" type="number" inputmode="decimal" step="0.01" min="1" aria-label="Tasa de cambio DOP por USD" [ngModel]="draftExchangeRate()" (ngModelChange)="updateDraftExchangeRate($event)">
+        </section>
+
+        <footer class="settings-sheet-footer">
+          <button class="ghost-button" type="button" (click)="closeSettings()">
+            <span>CANCELAR</span>
+          </button>
+          <button class="primary-button" type="button" (click)="saveSettings()">
+            <span>GUARDAR</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
 </main>
 } @else {
 <main class="access-lock-shell" aria-labelledby="access-lock-title">

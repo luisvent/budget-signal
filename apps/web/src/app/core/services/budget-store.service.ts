@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { AppState, Budget, CurrencyAmount, CurrencyCode, ImportResponse, ImportSummary, StatementFilePayload, StoredStatement, Theme, Transaction, emptyImportSummary } from '../models/budget.models';
+import { AppState, Budget, CurrencyAmount, CurrencyCode, ImportResponse, ImportSummary, SettingsSnapshot, StatementFilePayload, StoredStatement, Theme, Transaction, emptyImportSummary } from '../models/budget.models';
 import { ApiClientService } from './api-client.service';
 import { SpendingAnalyticsService } from './spending-analytics.service';
 
@@ -15,6 +15,7 @@ export class BudgetStoreService {
   readonly transactions = signal<Transaction[]>([]);
   readonly budgets = signal<Budget[]>([]);
   readonly theme = signal<Theme>('dark');
+  readonly exchangeRate = signal<number>(60);
   readonly importStatus = signal('[SIN DATOS CARGADOS]');
   readonly budgetEmailStatus = signal('');
   readonly sendingBudgetEmail = signal(false);
@@ -88,6 +89,22 @@ export class BudgetStoreService {
 
   toggleTheme(): void {
     this.theme.update((theme) => theme === 'dark' ? 'light' : 'dark');
+  }
+
+  setTheme(theme: Theme): void {
+    this.theme.set(theme === 'light' ? 'light' : 'dark');
+  }
+
+  async setExchangeRate(rate: number): Promise<void> {
+    const numeric = Number(rate);
+    const normalized = Number.isFinite(numeric) && numeric > 0 ? numeric : 60;
+    this.exchangeRate.set(normalized);
+
+    try {
+      await this.api.put<{ settings: SettingsSnapshot }>('/api/settings/exchange-rate', { exchangeRateDopPerUsd: normalized });
+    } catch {
+      return;
+    }
   }
 
   async importStatementText(): Promise<void> {
@@ -234,6 +251,8 @@ export class BudgetStoreService {
 
   private applyState(state: AppState): void {
     this.theme.set(state.theme === 'light' ? 'light' : 'dark');
+    const rawRate = state.settings?.exchangeRateDopPerUsd;
+    this.exchangeRate.set(Number.isFinite(rawRate) && rawRate > 0 ? rawRate : 60);
     this.budgets.set(Array.isArray(state.budgets) ? state.budgets : []);
     this.storedStatements.set(Array.isArray(state.statements) ? state.statements : []);
     this.transactions.set(Array.isArray(state.transactions) ? state.transactions : []);

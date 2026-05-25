@@ -1,4 +1,5 @@
 import { Component, Injector, ViewEncapsulation, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AccessCodeService, normalizeAccessCode } from './core/services/access-code.service';
 import { BudgetStoreService } from './core/services/budget-store.service';
 import { ConversionBudgetService } from './core/services/conversion-budget.service';
@@ -35,6 +36,7 @@ const budgetSignalColors: Record<BudgetSignalLevel, string> = {
     ConversionBudgetComponent,
     DashboardChartsComponent,
     DashboardSummaryComponent,
+    FormsModule,
     InsightGridComponent,
     StatementImporterComponent,
     PersonalBudgetComponent,
@@ -58,6 +60,8 @@ export class AppComponent {
   readonly enteredAccessCode = signal('');
   readonly accessStatus = signal('');
   readonly activeView = signal<AppView>('budget');
+  readonly settingsOpen = signal(false);
+  readonly draftExchangeRate = signal<number>(60);
   readonly budgetSignalLevel = computed(() => this.levelFromRemaining(this.personalBudget.netTotals()[0]?.amount ?? 0));
   readonly budgetSignalColor = computed(() => budgetSignalColors[this.budgetSignalLevel()]);
 
@@ -111,6 +115,33 @@ export class AppComponent {
 
   showView(view: AppView): void {
     this.activeView.set(view);
+
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  openSettings(): void {
+    this.draftExchangeRate.set(this.store.exchangeRate());
+    this.settingsOpen.set(true);
+  }
+
+  closeSettings(): void {
+    this.settingsOpen.set(false);
+  }
+
+  updateDraftExchangeRate(value: number | string | null): void {
+    const numeric = Number(value);
+    this.draftExchangeRate.set(Number.isFinite(numeric) && numeric > 0 ? numeric : 60);
+  }
+
+  async saveSettings(): Promise<void> {
+    await this.store.setExchangeRate(this.draftExchangeRate());
+    this.settingsOpen.set(false);
+  }
+
+  toggleTheme(): void {
+    this.store.toggleTheme();
   }
 
   private levelFromRemaining(remaining: number): BudgetSignalLevel {

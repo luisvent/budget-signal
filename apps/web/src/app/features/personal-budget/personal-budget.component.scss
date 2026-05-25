@@ -43,6 +43,13 @@
 	flex: 1 1 96px;
 }
 
+.budget-entry-marker {
+	flex: 0 0 18px;
+	width: 18px;
+	height: 18px;
+	opacity: 0.85;
+}
+
 .budget-entry-name[data-expense-level='1'] {
 	color: #9a9a9a;
 }

@@ -15,6 +15,7 @@ import {
   updateBudgets,
   updateConversionBudget,
   updatePersonalBudget,
+  updateSettings,
   updateTheme,
   updateWealthPortfolio
 } from './store.mjs';
@@ -80,6 +81,11 @@ const server = createServer(async (request, response) => {
       case 'PUT /api/settings/theme': {
         const body = await readJsonBody(request);
         sendJson(response, 200, await updateTheme(body.theme));
+        return;
+      }
+      case 'PUT /api/settings/exchange-rate': {
+        const body = await readJsonBody(request);
+        sendJson(response, 200, await updateSettings({ exchangeRateDopPerUsd: body.exchangeRateDopPerUsd }));
         return;
       }
       case 'PUT /api/budgets': {
